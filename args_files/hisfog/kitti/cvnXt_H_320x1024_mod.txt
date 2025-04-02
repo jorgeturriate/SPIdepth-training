@@ -1,0 +1,27 @@
+--data_path D:/PythonProyects/Datasets/kitti_data
+--log_dir D:/PythonProyects/Datasets/exps/convnext_v13_xxlarge
+--model_name cvnXt_075
+--no_cuda
+--dataset kitti
+--eval_split eigen
+--backbone convnextv2_huge.fcmae_ft_in22k_in1k_384
+--height 320
+--width 1024
+--log_frequency 1000
+--batch_size 16
+--learning_rate 4e-5
+--num_epochs 20
+--scheduler_step_size 10
+--model_dim 32
+--patch_size 32
+--dim_out 64
+--query_nums 64
+--dec_channels 1024 512 256 128
+--min_depth 0.001
+--max_depth 80.0
+--use_stereo
+--load_weights_folder exps/convnext_v11_xxlarge/cvnXt_075/models/weights_12
+--pose_net_path exps/convnext_v11_xxlarge/cvnXt_075/models/weights_13/
+--eval_mono
+--post_process
+--num_workers 0
