@@ -24,6 +24,8 @@ import networks
 # import uuid
 from collections import OrderedDict
 
+
+
 PROJECT = "SQLdepth"
 experiment_name="Mono"
 
@@ -517,7 +519,8 @@ class Trainer:
                 reprojection_losses *= mask
 
                 # add a loss pushing mask to 1 (using nn.BCELoss for stability)
-                weighting_loss = 0.2 * nn.BCELoss()(mask, torch.ones(mask.shape).cuda())
+                #weighting_loss = 0.2 * nn.BCELoss()(mask, torch.ones(mask.shape).cuda())
+                weighting_loss = 0.2 * nn.BCELoss()(mask, torch.ones(mask.shape).to(self.device))
                 loss += weighting_loss.mean()
 
             if self.opt.avg_reprojection:
@@ -528,7 +531,7 @@ class Trainer:
             if not self.opt.disable_automasking:
                 # add random numbers to break ties
                 identity_reprojection_loss += torch.randn(
-                    identity_reprojection_loss.shape).cuda() * 0.00001
+                    identity_reprojection_loss.shape).to(self.device) * 0.00001 #.cuda() was replaced with to(self.device)
 
                 combined = torch.cat((identity_reprojection_loss, reprojection_loss), dim=1)
             else:

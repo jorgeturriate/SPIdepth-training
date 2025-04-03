@@ -8,9 +8,9 @@
 --height 320
 --width 1024
 --log_frequency 1000
---batch_size 16
+--batch_size 4
 --learning_rate 4e-5
---num_epochs 20
+--num_epochs 2
 --scheduler_step_size 10
 --model_dim 32
 --patch_size 32
