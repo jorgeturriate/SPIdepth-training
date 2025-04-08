@@ -15,11 +15,11 @@ from kitti_utils import generate_depth_map
 from .mono_dataset import MonoDataset
 
 
-class KITTIDataset(MonoDataset):
+class KITTIDatasetBACK(MonoDataset):
     """Superclass for different types of KITTI dataset loaders
     """
     def __init__(self, *args, **kwargs):
-        super(KITTIDataset, self).__init__(*args, **kwargs)
+        super(KITTIDatasetBACK, self).__init__(*args, **kwargs)
 
         # NOTE: Make sure your intrinsics matrix is *normalized* by the original image size.
         # To normalize you need to scale the first row by 1 / image_width and the second row
@@ -55,11 +55,11 @@ class KITTIDataset(MonoDataset):
         return color
 
 
-class KITTIRAWDataset(KITTIDataset):
+class KITTIRAWDatasetBACK(KITTIDataset):
     """KITTI dataset which loads the original velodyne depth maps for ground truth
     """
     def __init__(self, *args, **kwargs):
-        super(KITTIRAWDataset, self).__init__(*args, **kwargs)
+        super(KITTIRAWDatasetBACK, self).__init__(*args, **kwargs)
 
     def get_image_path(self, folder, frame_index, side):
         f_str = "{:010d}{}".format(frame_index, self.img_ext)
@@ -85,11 +85,11 @@ class KITTIRAWDataset(KITTIDataset):
         return depth_gt
 
 
-class KITTIOdomDataset(KITTIDataset):
+class KITTIOdomDatasetBACK(KITTIDataset):
     """KITTI dataset for odometry training and testing
     """
     def __init__(self, *args, **kwargs):
-        super(KITTIOdomDataset, self).__init__(*args, **kwargs)
+        super(KITTIOdomDatasetBACK, self).__init__(*args, **kwargs)
 
     def get_image_path(self, folder, frame_index, side):
         f_str = "{:06d}{}".format(frame_index, self.img_ext)
@@ -101,11 +101,11 @@ class KITTIOdomDataset(KITTIDataset):
         return image_path
 
 
-class KITTIDepthDataset(KITTIDataset):
+class KITTIDepthDatasetBACK(KITTIDataset):
     """KITTI dataset which uses the updated ground truth depth maps
     """
     def __init__(self, *args, **kwargs):
-        super(KITTIDepthDataset, self).__init__(*args, **kwargs)
+        super(KITTIDepthDatasetBACK, self).__init__(*args, **kwargs)
 
     def get_image_path(self, folder, frame_index, side):
         f_str = "{:010d}{}".format(frame_index, self.img_ext)
