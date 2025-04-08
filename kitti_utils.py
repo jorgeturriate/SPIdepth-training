@@ -5,35 +5,52 @@ from __future__ import absolute_import, division, print_function
 import os
 import numpy as np
 from collections import Counter
+import gcsfs
+
+def load_from_file(path, use_gcs=False, gcs=None, gcs_root=""):
+    """Open a file based on the file system local or GCS."""
+    if use_gcs:
+        full_path = os.path.join(gcs_root, path)
+        with gcs.open(full_path, 'rb') as f:
+            return f.read().decode("utf-8").splitlines()
+    else:
+        with open(path, 'r') as f:
+            return f.readlines()
 
 
-def load_velodyne_points(filename):
+def load_velodyne_points(filename, use_gcs=False, gcs=None, gcs_root=""):
     """Load 3D point cloud from KITTI file format
     (adapted from https://github.com/hunse/kitti)
     """
-    points = np.fromfile(filename, dtype=np.float32).reshape(-1, 4)
+    if use_gcs:
+        full_path = os.path.join(gcs_root, filename)
+        with gcs.open(full_path, 'rb') as f:
+            points = np.frombuffer(f.read(), dtype=np.float32).reshape(-1, 4)
+    else:
+        points = np.fromfile(filename, dtype=np.float32).reshape(-1, 4)
     points[:, 3] = 1.0  # homogeneous
     return points
 
 
-def read_calib_file(path):
+def read_calib_file(path,  use_gcs=False, gcs=None, gcs_root=""):
     """Read KITTI calibration file
     (from https://github.com/hunse/kitti)
     """
     float_chars = set("0123456789.e+- ")
     data = {}
-    with open(path, 'r') as f:
-        for line in f.readlines():
-            key, value = line.split(':', 1)
-            value = value.strip()
-            data[key] = value
-            if float_chars.issuperset(value):
-                # try to cast to float array
-                try:
-                    data[key] = np.array(list(map(float, value.split(' '))))
-                except ValueError:
-                    # casting error: data[key] already eq. value, so pass
-                    pass
+    lines = load_from_file(path, use_gcs=use_gcs, gcs=gcs, gcs_root=gcs_root)
+    for line in lines:
+        key, value = line.split(':', 1)
+        value = value.strip()
+        data[key] = value
+        if float_chars.issuperset(value):
+            # try to cast to float array
+            try:
+                data[key] = np.array(list(map(float, value.split(' '))))
+            except ValueError:
+                # casting error: data[key] already eq. value, so pass
+                pass
+
 
     return data
 
@@ -45,12 +62,12 @@ def sub2ind(matrixSize, rowSub, colSub):
     return rowSub * (n-1) + colSub - 1
 
 
-def generate_depth_map(calib_dir, velo_filename, cam=2, vel_depth=False):
+def generate_depth_map(calib_dir, velo_filename, cam=2, vel_depth=False, use_gcs=False, gcs=None, gcs_root=""):
     """Generate a depth map from velodyne data
     """
     # load calibration files
-    cam2cam = read_calib_file(os.path.join(calib_dir, 'calib_cam_to_cam.txt'))
-    velo2cam = read_calib_file(os.path.join(calib_dir, 'calib_velo_to_cam.txt'))
+    cam2cam = read_calib_file(os.path.join(calib_dir, 'calib_cam_to_cam.txt'), use_gcs=use_gcs, gcs=gcs, gcs_root=gcs_root)
+    velo2cam = read_calib_file(os.path.join(calib_dir, 'calib_velo_to_cam.txt'), use_gcs=use_gcs, gcs=gcs, gcs_root=gcs_root)
     velo2cam = np.hstack((velo2cam['R'].reshape(3, 3), velo2cam['T'][..., np.newaxis]))
     velo2cam = np.vstack((velo2cam, np.array([0, 0, 0, 1.0])))
 
@@ -65,7 +82,7 @@ def generate_depth_map(calib_dir, velo_filename, cam=2, vel_depth=False):
 
     # load velodyne points and remove all behind image plane (approximation)
     # each row of the velodyne data is forward, left, up, reflectance
-    velo = load_velodyne_points(velo_filename)
+    velo = load_velodyne_points(velo_filename, use_gcs=use_gcs, gcs=gcs, gcs_root=gcs_root)
     velo = velo[velo[:, 0] >= 0, :]
 
     # project the points to the camera
