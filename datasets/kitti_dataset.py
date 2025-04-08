@@ -48,6 +48,8 @@ class KITTIDataset(MonoDataset):
     """Superclass for different types of KITTI dataset loaders
     """
     def __init__(self, *args, **kwargs):
+        self.data_path = args[0]  # asuming that data_path is in args[0]
+        self.gcs = GCSHandler(self.data_path)
         super(KITTIDataset, self).__init__(*args, **kwargs)
 
         # NOTE: Make sure your intrinsics matrix is *normalized* by the original image size.
@@ -62,7 +64,6 @@ class KITTIDataset(MonoDataset):
 # K是相机内参 stereo_T是相机外参，也就是转换矩阵,4行4列，16维度
         self.full_res_shape = (1242, 375)
         self.side_map = {"2": 2, "3": 3, "l": 2, "r": 3}
-        self.gcs = GCSHandler(self.data_path)
 
     def check_depth(self):
         line = self.filenames[0].split()
