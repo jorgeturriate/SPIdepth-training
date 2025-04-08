@@ -23,3 +23,4 @@
 --pose_net_path /content/logs/convnext_v13_xxlarge_city
 --eval_mono
 --post_process
+--num_workers 4
