@@ -25,7 +25,7 @@ def load_velodyne_points(filename, use_gcs=False, gcs=None, gcs_root=""):
     if use_gcs:
         full_path = os.path.join(gcs_root, filename)
         with gcs.open(full_path, 'rb') as f:
-            points = np.frombuffer(f.read(), dtype=np.float32).reshape(-1, 4)
+            points = np.frombuffer(f.read(), dtype=np.float32).reshape(-1, 4).copy()
     else:
         points = np.fromfile(filename, dtype=np.float32).reshape(-1, 4)
     points[:, 3] = 1.0  # homogeneous
