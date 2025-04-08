@@ -1,0 +1,25 @@
+--data_path gs://mde_datasets_bucket/kitti
+--log_dir /content/logs/convnext_v13_xxlarge_city
+--model_name cvnXt_075
+--dataset kitti
+--eval_split eigen
+--backbone convnextv2_huge.fcmae_ft_in22k_in1k_384
+--height 320
+--width 1024
+--log_frequency 1000
+--batch_size 4
+--learning_rate 4e-5
+--num_epochs 2
+--scheduler_step_size 10
+--model_dim 32
+--patch_size 32
+--dim_out 64
+--query_nums 64
+--dec_channels 1024 512 256 128
+--min_depth 0.001
+--max_depth 80.0
+--use_stereo
+--load_weights_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/cityscapes/
+--pose_net_path /content/logs/convnext_v13_xxlarge_city
+--eval_mono
+--post_process
