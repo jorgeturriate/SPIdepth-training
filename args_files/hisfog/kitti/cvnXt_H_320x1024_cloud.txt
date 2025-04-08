@@ -1,7 +1,6 @@
 --data_path gs://mde_datasets_bucket/kitti
 --log_dir /content/logs/convnext_v13_xxlarge
 --model_name cvnXt_075
---no_cuda
 --dataset kitti
 --eval_split eigen
 --backbone convnextv2_huge.fcmae_ft_in22k_in1k_384
