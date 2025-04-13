@@ -13,3 +13,4 @@
 --width 1024
 --image_path /content/drive/MyDrive/SPIdepth_Training/DroneImages/images
 --ext png
+--no_cuda
