@@ -8,8 +8,8 @@
 --min_depth 0.001
 --max_depth 80.0
 --load_pretrained_model
---load_pt_folder exps/inc_kitti_exps_v13
+--load_pt_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/cityscapes/
 --height 320
 --width 1024
---image_path images/02.png
---ext jpg
+--image_path /content/drive/MyDrive/SPIdepth_Training/DroneImages/images
+--ext png
