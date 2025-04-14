@@ -6,11 +6,10 @@
 --query_nums 64
 --dec_channels 1024 512 256 128
 --min_depth 0.001
---max_depth 80.0
+--max_depth 100.0
 --load_pretrained_model
---load_pt_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/cityscapes/
+--load_pt_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/
 --height 320
 --width 1024
 --image_path /content/drive/MyDrive/SPIdepth_Training/DroneImages/images
 --ext png
---no_cuda
