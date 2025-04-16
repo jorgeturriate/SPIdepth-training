@@ -2,7 +2,7 @@
 --log_dir /content/logs/convnext_v13_xxlarge
 --model_name cvnXt_075
 --dataset kitti
---eval_split eigen
+--eval_split eigen_benchmark
 --backbone convnextv2_huge.fcmae_ft_in22k_in1k_384
 --height 320
 --width 1024
