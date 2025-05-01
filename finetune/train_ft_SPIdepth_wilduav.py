@@ -375,7 +375,7 @@ if __name__ == '__main__':
     parser.add_argument('--max_depth', type=float, help='maximum depth in estimation', default=10)
     parser.add_argument('--min_depth', type=float, help='minimum depth in estimation', default=1e-3)
 
-    parser.add_argument('--do_random_rotate', default=True,
+    parser.add_argument('--do_random_rotate', default=False,
                         help='if set, will perform random rotation for augmentation',
                         action='store_true')
     parser.add_argument('--degree', type=float, help='random rotation maximum degree', default=2.5)
