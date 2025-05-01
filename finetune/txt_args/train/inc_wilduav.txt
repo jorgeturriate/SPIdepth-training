@@ -2,7 +2,7 @@
 --root exps/inc_wilduav_exps_v13
 --load_weights_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/
 --epochs 5
---bs 3
+--bs 1
 --lr 2e-6
 --wd 0.01
 --div_factor 10
