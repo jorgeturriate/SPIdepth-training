@@ -4,6 +4,8 @@ import sys
 import uuid
 from datetime import datetime as dt
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import numpy as np
 import torch
 import torch.distributed as dist
