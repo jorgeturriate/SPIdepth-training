@@ -89,6 +89,7 @@ class DataLoadPreprocess(Dataset):
         self.transform = transform
         self.to_tensor = ToTensor
         self.is_for_online_eval = is_for_online_eval
+        self.resize_shape = (self.args.input_width, self.args.input_height)
 
     def __getitem__(self, idx):
         sample_path = self.filenames[idx]
@@ -98,11 +99,12 @@ class DataLoadPreprocess(Dataset):
             image_path = os.path.join(self.args.data_path, remove_leading_slash(sample_path.split()[0]))
             depth_path = os.path.join(self.args.data_path, remove_leading_slash(sample_path.split()[1]))
 
-            image = self.open_image(image_path)
+            image = self.open_image(image_path).resize(self.resize_shape, Image.BILINEAR)
             if depth_path.endswith(".npy"):
                 depth_gt = self.open_npy(depth_path)
+                depth_gt = Image.fromarray(depth_gt).resize(self.resize_shape, Image.NEAREST)
             else:
-                depth_gt = self.open_image(depth_path)
+                depth_gt = self.open_image(depth_path).resize(self.resize_shape, Image.NEAREST)
 
             # To avoid blank boundaries due to pixel registration
             if self.args.do_random_rotate is True:
@@ -121,7 +123,7 @@ class DataLoadPreprocess(Dataset):
             
             data_path = self.args.data_path
             image_path = os.path.join(data_path, remove_leading_slash(sample_path.split()[0]))
-            image = np.asarray(self.open_image(image_path), dtype=np.float32) / 255.0
+            image = np.asarray(self.open_image(image_path).resize(self.resize_shape, Image.BILINEAR), dtype=np.float32) / 255.0
 
             if self.mode == 'online_eval':
                 gt_path = self.args.data_path
@@ -130,8 +132,9 @@ class DataLoadPreprocess(Dataset):
                 try:
                     if depth_path.endswith(".npy"):
                         depth_gt = self.open_npy(depth_path)
+                        depth_gt = Image.fromarray(depth_gt).resize(self.resize_shape, Image.NEAREST)
                     else:
-                        depth_gt = self.open_image(depth_path)
+                        depth_gt = self.open_image(depth_path).resize(self.resize_shape, Image.NEAREST)
                     has_valid_depth = True
                 except IOError:
                     depth_gt = False
