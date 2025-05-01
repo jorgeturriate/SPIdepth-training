@@ -14,8 +14,8 @@
 --data_path gs://wilduav/mapping_set
 --gt_path gs://wilduav/mapping_set
 --filenames_file ./finetune/train_test_inputs/wilduav_train_files.txt
---input_height 352
---input_width 640
+--input_height 320
+--input_width 1024
 --min_depth 0.001
 --max_depth 80
 --degree 1.0
