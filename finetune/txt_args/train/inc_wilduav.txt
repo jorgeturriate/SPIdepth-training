@@ -1,6 +1,6 @@
 --name spidepth_wilduav_finetune
 --root exps/inc_wilduav_exps_v13
---load_weights_folder exps/convnext_v13_xxlarge/cvnXt_075/models/weights_13
+--load_weights_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/
 --epochs 5
 --bs 3
 --lr 2e-6
