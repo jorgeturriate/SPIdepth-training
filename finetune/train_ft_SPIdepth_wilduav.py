@@ -97,8 +97,10 @@ def main_process(gpu, args, opt):
         torch.cuda.set_device(args.gpu)
         model = model.cuda(args.gpu)
 
-    print("using DataParallel")
-    model = torch.nn.DataParallel(model)
+    #print("using DataParallel")
+    #model = torch.nn.DataParallel(model)
+    
+    model = model.to(torch.device('cuda'))
     args.multigpu = False
     args.epoch = 0
     args.last_epoch = -1
