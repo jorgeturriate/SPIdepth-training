@@ -9,7 +9,7 @@
 --final_div_factor 100
 --validate_every 3000
 --dataset widuav
---workers 2
+--workers 0
 --w_chamfer 0
 --data_path gs://wilduav/mapping_set
 --gt_path gs://wilduav/mapping_set

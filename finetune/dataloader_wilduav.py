@@ -156,7 +156,7 @@ class DataLoadPreprocess(Dataset):
     
     def open_image(self, path):
         if self.is_gcs:
-            print(path)
+            #print(path)
             with self.gcs.open(path, 'rb') as f:
                 return Image.open(f).convert("RGB")
         else:
