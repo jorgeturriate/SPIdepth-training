@@ -20,6 +20,7 @@ class Depth_Decoder_QueryTr(nn.Module):
         # self.dense_layer = PixelWiseDotProduct_for_dense()
         self.full_query_layer = FullQueryLayer()
         self.query_nums = query_nums
+        self.dim_out= dim_out
 
 
         # Removed fixed input dim for bins_regressor
