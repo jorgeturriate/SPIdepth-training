@@ -82,7 +82,17 @@ class Depth_Decoder_QueryTr(nn.Module):
             y = torch.sigmoid(y)
         y = y / y.sum(dim=1, keepdim=True)
         
+        # Dynamically define convert_to_prob
+        if not hasattr(self, 'convert_to_prob') or self.convert_to_prob[0].in_channels != energy_maps.shape[1]:
+            self.convert_to_prob = nn.Sequential(
+                nn.Conv2d(energy_maps.shape[1], self.dim_out, kernel_size=1, stride=1, padding=0),
+                nn.Softmax(dim=1)
+            ).to(energy_maps.device)
+
+
         out = self.convert_to_prob(energy_maps)
+
+        # Compute bin edges
         bin_widths = (self.max_val - self.min_val) * y 
         bin_widths = nn.functional.pad(bin_widths, (1, 0), mode='constant', value=self.min_val)
         bin_edges = torch.cumsum(bin_widths, dim=1) 
