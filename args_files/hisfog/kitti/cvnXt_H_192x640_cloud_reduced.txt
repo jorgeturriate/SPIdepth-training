@@ -15,7 +15,7 @@
 --patch_size 16
 --dim_out 32
 --query_nums 32
---dec_channels 1024 512 256 128
+--dec_channels 512 256 128 64
 --min_depth 0.001
 --max_depth 80.0
 --use_stereo
