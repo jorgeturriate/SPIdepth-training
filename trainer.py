@@ -3,6 +3,8 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import time
+import uuid
+from datetime import datetime as dt
 
 import torch
 import torch.nn.functional as F
@@ -19,7 +21,7 @@ from layers import *
 
 import datasets
 import networks
-# import wandb
+import wandb #To log in wandb
 # from datetime import datetime as dt
 # import uuid
 from collections import OrderedDict
@@ -231,11 +233,13 @@ class Trainer:
         self.epoch = 0
         self.step = 0
         self.start_time = time.time()
-        # run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.epoch}-lr{self.opt.learning_rate}--{uuid.uuid4()}"
-        # name = f"{experiment_name}_{run_id}"
-        # wandb.init(project=PROJECT, name=name, config=self.opt, dir='.')
+        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.epoch}-lr{self.opt.learning_rate}--{uuid.uuid4()}"
+        name = f"{experiment_name}_{run_id}"
+        #wandb.init(project=PROJECT, name=name, config=self.opt, dir='.')
+        wandb.init(project=PROJECT, name=name, config=self.opt, dir=self.opt.log_dir)
         self.save_model()
         for self.epoch in range(self.opt.num_epochs):
+            wandb.log({"Epoch": self.epoch}, step=self.step) #Added to log in wandb
             self.run_epoch()
             self.model_lr_scheduler.step()
             if (self.epoch + 1) % self.opt.save_frequency == 0:
@@ -261,9 +265,16 @@ class Trainer:
 
             duration = time.time() - before_op_time
 
-            # should_log = True
-            # if should_log and self.step % 5 == 0:
-            #     wandb.log({f"Train/reprojection_loss": losses["loss"].item()}, step=self.step)
+            #Wandb loging
+            should_log = True
+            if should_log and self.step % 5 == 0:
+              #wandb.log({f"Train/reprojection_loss": losses["loss"].item()}, step=self.step)
+              wandb.log({
+                    "Train/reprojection_loss": losses["loss"].item(),
+                    "Train/smoothness_loss": losses["reproj_loss"].item(),  
+                    "Train/total_loss": losses["smooth_loss"].item()
+                }, step=self.step)
+
             # log less frequently after the first 2000 steps to save time & disk space
             early_phase = batch_idx % self.opt.log_frequency == 0 and self.step < 2000
             late_phase = self.step % 1000 == 0
@@ -275,7 +286,8 @@ class Trainer:
                     self.compute_depth_losses(inputs, outputs, losses)
 
                 self.log("train", inputs, outputs, losses)
-                self.val()
+                if batch_idx % (self.opt.log_frequency*2 )== 0: 
+                    self.val() #Evaluate after the double of log_frequency
 
             self.step += 1
 
@@ -379,7 +391,7 @@ class Trainer:
     def val(self):
         """Validate the model on a single minibatch
         """
-        self.set_eval()
+        """self.set_eval()
         try:
             # inputs = self.val_iter.next() # for old pytorch
             inputs = next(self.val_iter) # for new pytorch
@@ -396,6 +408,44 @@ class Trainer:
 
             self.log("val", inputs, outputs, losses)
             del inputs, outputs, losses
+
+        self.set_train()"""
+
+        """Validate the model on the entire validation set (used because of the small val test)"""
+        self.set_eval()
+
+        val_losses = []
+        smooth_losses = []
+        reproj_losses = []
+
+        with torch.no_grad():
+            val_total_count= len(self.val_loader.dataset)
+            count=0
+            for inputs in self.val_loader:
+                count+=1
+                outputs, losses = self.process_batch(inputs)
+
+                val_losses.append(losses["loss"].item())
+                reproj_losses.append(losses["reproj_loss"].item())
+                smooth_losses.append(losses["smooth_loss"].item())
+
+                if "depth_gt" in inputs:
+                    self.compute_depth_losses(inputs, outputs, losses)
+                if count==val_total_count:
+                    self.log("val", inputs, outputs, losses) #Log the last image from validation test
+                del inputs, outputs, losses
+
+        # Average over validation set
+        avg_loss = sum(val_losses) / len(val_losses)
+        avg_reproj = sum(reproj_losses) / len(reproj_losses)
+        avg_smooth = sum(smooth_losses) / len(smooth_losses)
+
+        # Log to W&B
+        wandb.log({
+            "Val/total_loss": avg_loss,
+            "Val/reprojection_loss": avg_reproj,
+            "Val/smoothness_loss": avg_smooth
+        }, step=self.step)
 
         self.set_train()
 
@@ -528,6 +578,9 @@ class Trainer:
             else:
                 reprojection_loss = reprojection_losses
 
+            #Save raw reprojection loss (mean over batch)
+            losses["reproj_loss"] = reprojection_loss.mean()
+
             if not self.opt.disable_automasking:
                 # add random numbers to break ties
                 identity_reprojection_loss += torch.randn(
@@ -556,6 +609,10 @@ class Trainer:
             smooth_loss = 0
             smooth_loss = get_smooth_loss(norm_disp, color)
             # smooth_loss
+
+             # Save smoothness loss per scale
+            losses["smooth_loss"] = self.opt.disparity_smoothness * smooth_loss / (2 ** scale)
+
             loss += self.opt.disparity_smoothness * smooth_loss / (2 ** scale)
             total_loss += loss
             losses["loss/{}".format(scale)] = loss
