@@ -188,8 +188,8 @@ class TrainerCL:
             device=self.device
         )
 
-        if not os.path.exists("scores.npy"):
-            self.curriculum_learner.score_and_save_losses("scores.npy")
+        if not os.path.exists("/content/scores.npy"):
+            self.curriculum_learner.score_and_save_losses("/content/scores.npy")
 
 
         self.writers = {}
@@ -260,7 +260,8 @@ class TrainerCL:
         curriculum_loader = self.curriculum_learner.get_curriculum_batches(
             epoch=self.epoch,
             total_epochs=self.opt.num_epochs,
-            batch_size=self.opt.batch_size
+            batch_size=self.opt.batch_size,
+            score_path="/content/scores.npy"
         )
 
         selected_size = self.curriculum_learner.pacing(self.epoch, self.opt.num_epochs, len(self.train_loader.dataset))
