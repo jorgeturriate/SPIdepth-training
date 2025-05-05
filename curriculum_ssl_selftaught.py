@@ -44,7 +44,7 @@ class CurriculumLearnerSelfSupervised:
             self.ssim.to(self.device)
         
         
-        if model=='SPIdepth':
+        if model=='SPIdepth' and not os.path.exists("/content/scores.npy"):
             self.models["encoder"] = networks.Unet(pretrained=False, backbone=self.opt.backbone, in_channels=3, num_classes=self.opt.model_dim, decoder_channels=self.opt.dec_channels)
             self.models["depth"] = networks.Depth_Decoder_QueryTr(in_channels=self.opt.model_dim, patch_size=self.opt.patch_size, dim_out=self.opt.dim_out, embedding_dim=self.opt.model_dim, 
                                                                     query_nums=self.opt.query_nums, num_heads=4, min_val=self.opt.min_depth, max_val=self.opt.max_depth)
