@@ -79,22 +79,6 @@ class CurriculumLearnerSelfSupervised:
             for m in self.models.values():
                 m.eval()
 
-    def scoring_function(self):
-        """
-        Use the SPIdepth total loss as the scoring function.
-        """
-        sample_losses = []
-
-        with torch.no_grad():
-            for inputs in self.dataloader:
-                for key in inputs:
-                    inputs[key] = inputs[key].to(self.device)
-                outputs, losses = self.process_batch(inputs)
-                total_loss = losses["loss"].item()
-                sample_losses.append(total_loss)
-
-        self.sample_scores = np.array(sample_losses)
-        self.sorted_indices = np.argsort(self.sample_scores)  # Ascending: easiest first
 
     def pacing(self, epoch, total_epochs, total_samples):
         """
@@ -106,12 +90,12 @@ class CurriculumLearnerSelfSupervised:
         else:
             raise NotImplementedError(f"Pacing function '{self.pacing_function}' not implemented")
 
-    def get_curriculum_batches(self, epoch, total_epochs, batch_size):
+    def get_curriculum_batches(self, epoch, total_epochs, batch_size, score_path="sample_scores.npy"):
         """
-        Return curriculum batches for this epoch.
+        Return curriculum batches for this epoch based on stored scores.
         """
         if len(self.sample_scores) == 0:
-            self.scoring_function()
+            self.load_scores(score_path)
 
         selected_size = self.pacing(epoch, total_epochs, len(self.sample_scores))
         selected_indices = self.sorted_indices[:selected_size]
@@ -123,6 +107,37 @@ class CurriculumLearnerSelfSupervised:
 
         return selected_loader
     
+    def score_and_save_losses(self, score_path="sample_scores.npy"):
+        """
+        Computes and stores difficulty scores (losses) of the dataset.
+        Only needs to be run once before curriculum training begins.
+        """
+        sample_losses = []
+
+        with torch.no_grad():
+            for inputs in self.dataloader:
+                for key in inputs:
+                    inputs[key] = inputs[key].to(self.device)
+                outputs, losses = self.process_batch(inputs)
+                total_loss = losses["loss"].item()
+                sample_losses.append(total_loss)
+
+        sample_losses = np.array(sample_losses)
+        np.save(score_path, sample_losses)
+        print(f"Saved difficulty scores to: {score_path}")
+
+        for model in self.models.values():
+            del model
+        torch.cuda.empty_cache()
+
+
+    def load_scores(self, score_path="sample_scores.npy"):
+        if not os.path.exists(score_path):
+            raise FileNotFoundError(f"Score file {score_path} not found. Run score_and_save_losses() first.")
+        self.sample_scores = np.load(score_path)
+        self.sorted_indices = np.argsort(self.sample_scores)  # easiest samples first
+
+
     def process_batch(self, inputs):
         """Pass a minibatch through the network and generate images and losses
         """

@@ -188,6 +188,9 @@ class TrainerCL:
             device=self.device
         )
 
+        if not os.path.exists("scores.npy"):
+            self.curriculum_learner.score_and_save_losses("scores.npy")
+
 
         self.writers = {}
         for mode in ["train", "val"]:
