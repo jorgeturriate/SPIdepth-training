@@ -28,6 +28,15 @@ class CurriculumLearnerSelfSupervised:
         self.num_pose_frames = 2 if self.opt.pose_model_input == "pairs" else self.num_input_frames # default=2
         self.backproject_depth = {}
         self.project_3d = {}
+        for scale in self.opt.scales:
+            h = self.opt.height // (2 ** scale)
+            w = self.opt.width // (2 ** scale)
+
+            self.backproject_depth[scale] = BackprojectDepth(self.opt.batch_size, h, w)
+            self.backproject_depth[scale].to(self.device)
+
+            self.project_3d[scale] = Project3D(self.opt.batch_size, h, w)
+            self.project_3d[scale].to(self.device)
 
         if model=='SPIdepth':
             self.models["encoder"] = networks.Unet(pretrained=False, backbone=self.opt.backbone, in_channels=3, num_classes=self.opt.model_dim, decoder_channels=self.opt.dec_channels)
