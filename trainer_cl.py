@@ -18,7 +18,7 @@ import json
 from utils import *
 from kitti_utils import *
 from layers import *
-from curriculum_learner import CurriculumLearnerSelfSupervised
+from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
 
 import datasets
 import networks
