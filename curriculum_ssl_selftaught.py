@@ -404,5 +404,5 @@ class CurriculumLearnerSelfSupervised:
         for i, metric in enumerate(self.depth_metric_names):
             losses[metric] = np.array(depth_errors[i].cpu())
 
-    def remove_module_prefix(state_dict):
+    def remove_module_prefix(self, state_dict):
         return {k.replace("module.", ""): v for k, v in state_dict.items()}
