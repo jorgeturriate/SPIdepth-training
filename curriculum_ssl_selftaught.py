@@ -55,7 +55,9 @@ class CurriculumLearnerSelfSupervised:
             filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.models["pose"].state_dict()}
             self.models["pose"].load_state_dict(filtered_dict_enc)
 
-          
+            for model in self.models.values():
+                model.to(device)
+
             for m in self.models.values():
                 m.eval()
 
