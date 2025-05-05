@@ -10,12 +10,12 @@ import networks
 from layers import *
 
 class CurriculumLearnerSelfSupervised:
-    def __init__(self, opt, model, dataloader,model_checkpoint_path ,pacing_function="linear", device="cuda"):
+    def __init__(self, opt, model, dataloader,model_path ,pacing_function="linear", device="cuda"):
         """
         model: SPIdepth model (without loading weights)
         dataloader: full training dataloader
         pacing_function: linear or quadratic pacing function
-        model_checkpoint_path: path to the checkpoint to use for scoring
+        model_path: path to the checkpoint to use for scoring
         opt: options file to load the model
         """
         self.models = {} if model=='SPIdepth' else ''
@@ -32,23 +32,26 @@ class CurriculumLearnerSelfSupervised:
                                                                     query_nums=self.opt.query_nums, num_heads=4, min_val=self.opt.min_depth, max_val=self.opt.max_depth)
             self.models["pose"] = networks.PoseCNN(self.num_input_frames if self.opt.pose_model_input == "all" else 2)
 
-            if not os.path.exists(model_checkpoint_path):
-                raise FileNotFoundError(f"Checkpoint not found at {model_checkpoint_path}")
+            if not os.path.exists(model_path):
+                raise FileNotFoundError(f"Checkpoint not found at {model_path}")
             
-            encoder_path = os.path.join(model_checkpoint_path, "encoder.pth")
-            decoder_path = os.path.join(model_checkpoint_path, "depth.pth")
-            pose_path = os.path.join(model_checkpoint_path, "pose.pth")
+            encoder_path = os.path.join(model_path, "encoder.pth")
+            decoder_path = os.path.join(model_path, "depth.pth")
+            pose_path = os.path.join(model_path, "pose.pth")
 
 
             loaded_dict_enc = torch.load(encoder_path, map_location=self.device)
+            loaded_dict_enc = self.remove_module_prefix(loaded_dict_enc)
             filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.models["encoder"].state_dict()}
             self.models["encoder"].load_state_dict(filtered_dict_enc)
 
             loaded_dict_enc = torch.load(decoder_path, map_location=self.device)
+            loaded_dict_enc = self.remove_module_prefix(loaded_dict_enc)
             filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.models["depth"].state_dict()}
             self.models["depth"].load_state_dict(filtered_dict_enc)
 
             loaded_dict_enc = torch.load(pose_path, map_location=self.device)
+            loaded_dict_enc = self.remove_module_prefix(loaded_dict_enc)
             filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.models["pose"].state_dict()}
             self.models["pose"].load_state_dict(filtered_dict_enc)
 
@@ -400,3 +403,6 @@ class CurriculumLearnerSelfSupervised:
 
         for i, metric in enumerate(self.depth_metric_names):
             losses[metric] = np.array(depth_errors[i].cpu())
+
+    def remove_module_prefix(state_dict):
+        return {k.replace("module.", ""): v for k, v in state_dict.items()}

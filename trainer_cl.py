@@ -183,7 +183,7 @@ class TrainerCL:
             opt=self.opt,
             model="SPIdepth",
             dataloader=self.train_loader,
-            model_checkpoint_path=self.opt.model_path,  # adjust to your config
+            model_path=self.opt.model_path,  # adjust to your config
             pacing_function="linear",  # or "quadratic" if you add support
             device=self.device
         )
