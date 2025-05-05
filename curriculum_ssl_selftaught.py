@@ -25,6 +25,7 @@ class CurriculumLearnerSelfSupervised:
         self.sample_scores = []
         self.opt= opt
         self.num_input_frames = len(self.opt.frame_ids) # default=[0, -1, 1]
+        self.num_pose_frames = 2 if self.opt.pose_model_input == "pairs" else self.num_input_frames # default=2
 
         if model=='SPIdepth':
             self.models["encoder"] = networks.Unet(pretrained=False, backbone=self.opt.backbone, in_channels=3, num_classes=self.opt.model_dim, decoder_channels=self.opt.dec_channels)
