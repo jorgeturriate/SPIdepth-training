@@ -3,7 +3,7 @@
 --model_name cvnXt_075
 --dataset kitti
 --eval_split eigen
---backbone convnextv2_huge.fcmae_ft_in22k_in1k_384
+--backbone convnextv2_base.fcmae_ft_in22k_in1k_384
 --height 192
 --width 512
 --log_frequency 10
