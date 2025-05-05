@@ -63,7 +63,6 @@ class CurriculumLearnerSelfSupervised:
         """
         Use the SPIdepth total loss as the scoring function.
         """
-        self.model.eval()
         sample_losses = []
 
         with torch.no_grad():
