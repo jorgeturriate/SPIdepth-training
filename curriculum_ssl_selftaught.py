@@ -38,6 +38,11 @@ class CurriculumLearnerSelfSupervised:
             self.project_3d[scale] = Project3D(self.opt.batch_size, h, w)
             self.project_3d[scale].to(self.device)
 
+        if not self.opt.no_ssim:
+            self.ssim = SSIM()
+            self.ssim.to(self.device)
+        
+        
         if model=='SPIdepth':
             self.models["encoder"] = networks.Unet(pretrained=False, backbone=self.opt.backbone, in_channels=3, num_classes=self.opt.model_dim, decoder_channels=self.opt.dec_channels)
             self.models["depth"] = networks.Depth_Decoder_QueryTr(in_channels=self.opt.model_dim, patch_size=self.opt.patch_size, dim_out=self.opt.dim_out, embedding_dim=self.opt.model_dim, 
