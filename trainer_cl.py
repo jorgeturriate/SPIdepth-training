@@ -18,7 +18,8 @@ import json
 from utils import *
 from kitti_utils import *
 from layers import *
-from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
+#from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
+from curriculum_ssl_transfer import CurriculumLearnerSelfSupervised
 
 import datasets
 import networks
@@ -169,6 +170,12 @@ class TrainerCL:
         self.train_loader = DataLoader(
             train_dataset, self.opt.batch_size, True,
             num_workers=self.opt.num_workers, pin_memory=True, drop_last=True)
+        
+        train_loader_cl= DataLoader(
+            train_dataset, 1, shuffle=False,
+            num_workers=self.opt.num_workers, pin_memory=True, drop_last=False)
+
+
         val_dataset = self.dataset(
             self.opt.data_path, val_filenames, self.opt.height, self.opt.width,
             self.opt.frame_ids, 1, is_train=False, img_ext=img_ext) # num_scales = 1
@@ -182,14 +189,16 @@ class TrainerCL:
         self.curriculum_learner = CurriculumLearnerSelfSupervised(
             opt=self.opt,
             model="SPIdepth",
-            dataloader=self.train_loader,
+            dataloader=train_loader_cl,
             model_path=self.opt.model_path,  # adjust to your config
             pacing_function="linear",  # or "quadratic" if you add support
             device=self.device
         )
 
-        if not os.path.exists("/content/scores.npy"):
-            self.curriculum_learner.score_and_save_losses("/content/scores.npy")
+        del train_loader_cl
+
+        if not os.path.exists("/content/scores_transfer.npy"):
+            self.curriculum_learner.score_and_save_losses("/content/scores_transfer.npy")
 
 
         self.writers = {}
@@ -261,7 +270,7 @@ class TrainerCL:
             epoch=self.epoch,
             total_epochs=self.opt.num_epochs,
             batch_size=self.opt.batch_size,
-            score_path="/content/scores.npy"
+            score_path="/content/scores_transfer.npy"
         )
 
         selected_size = self.curriculum_learner.pacing(self.epoch, self.opt.num_epochs, len(self.train_loader.dataset))
