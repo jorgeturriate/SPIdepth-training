@@ -19,7 +19,7 @@ if __name__ == "__main__":
         opts = options.parser.parse_args([arg_filename_with_prefix])
     else:
         opts = options.parser.parse_args()
-    #opts.model_path= "/content/drive/MyDrive/SPIdepth_Training/cl_model/"
-    opts.model_path= "/content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/"
+    opts.model_path= "/content/drive/MyDrive/SPIdepth_Training/cl_model/weights_1"
+    #opts.model_path= "/content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/"
     trainer = TrainerCL(opts)
     trainer.train()

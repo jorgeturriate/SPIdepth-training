@@ -18,8 +18,8 @@ import json
 from utils import *
 from kitti_utils import *
 from layers import *
-#from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
-from curriculum_ssl_transfer import CurriculumLearnerSelfSupervised
+from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
+#from curriculum_ssl_transfer import CurriculumLearnerSelfSupervised
 
 import datasets
 import networks
@@ -197,8 +197,8 @@ class TrainerCL:
 
         del train_loader_cl
 
-        if not os.path.exists("/content/scores_transfer.npy"):
-            self.curriculum_learner.score_and_save_losses("/content/scores_transfer.npy")
+        if not os.path.exists("/content/scores_self.npy"):
+            self.curriculum_learner.score_and_save_losses("/content/scores_self.npy")
 
 
         self.writers = {}
