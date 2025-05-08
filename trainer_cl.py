@@ -270,7 +270,8 @@ class TrainerCL:
             epoch=self.epoch,
             total_epochs=self.opt.num_epochs,
             batch_size=self.opt.batch_size,
-            score_path="/content/scores_transfer.npy"
+            #score_path="/content/scores_transfer.npy"
+            score_path="/content/scores_self.npy"
         )
 
         selected_size = self.curriculum_learner.pacing(self.epoch, self.opt.num_epochs, len(self.train_loader.dataset))
