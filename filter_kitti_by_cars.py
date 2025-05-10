@@ -17,7 +17,7 @@ def main(input_txt, output_txt, box_json, data_path, num_images=1000, img_ext='.
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     
     # Load YOLOv5 (car = class 2 in COCO)
-    model = YOLO("yolov5s.pt")  # Make sure this file is downloaded or pip install yolov5
+    model = YOLO("yolov5su.pt")  # Make sure this file is downloaded or pip install yolov5
     model.to(device)
     model.eval()
 
