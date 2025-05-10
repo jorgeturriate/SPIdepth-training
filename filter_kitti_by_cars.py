@@ -43,6 +43,7 @@ def main(input_txt, output_txt, box_json, remaining_txt, data_path, num_images=1
         boxes = [b for b in results.boxes.data.cpu().numpy() if int(b[5]) == 2]  # class 2 = car
 
         if len(boxes) == 0 or len(boxes) > 4:
+            used_indices.append(idx)
             continue
 
         boxes = sorted(boxes, key=lambda b: (b[2]-b[0])*(b[3]-b[1]), reverse=True)
@@ -65,7 +66,7 @@ def main(input_txt, output_txt, box_json, remaining_txt, data_path, num_images=1
     with open(box_json, 'w') as f:
         json.dump(car_boxes, f, indent=2)
 
-    # Save remaining paths (excluding selected ones)
+    # Save remaining paths (excluding selected and not selected ones)
     all_indices = set(range(len(all_filenames)))
     remaining_indices = sorted(all_indices - set(used_indices))
     remaining_paths = [all_filenames[i] for i in remaining_indices]
@@ -79,11 +80,11 @@ def main(input_txt, output_txt, box_json, remaining_txt, data_path, num_images=1
 if __name__ == '__main__':
     # Example call in Colab:
     main(
-        input_txt="/content/SPIdepth-training/splits/eigen_zhou/train_files_original.txt",
-        #input_txt="/content/train_files_remaining.txt",
-        output_txt="/content/filtered_train_files1.txt",
-        box_json="/content/car_boxes1.json",
-        remaining_txt="/content/train_files_remaining.txt",
+        #input_txt="/content/SPIdepth-training/splits/eigen_zhou/train_files_original.txt",
+        input_txt="/content/train_files_remaining.txt",
+        output_txt="/content/filtered_train_files2.txt",
+        box_json="/content/car_boxes2.json",
+        remaining_txt="/content/train_files_remaining2.txt",
         data_path="gs://mde_data_bucket/kitti",
-        num_images=100
+        num_images=500
     )
