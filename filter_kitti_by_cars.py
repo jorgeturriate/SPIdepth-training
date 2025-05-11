@@ -81,10 +81,10 @@ if __name__ == '__main__':
     # Example call in Colab:
     main(
         #input_txt="/content/SPIdepth-training/splits/eigen_zhou/train_files_original.txt",
-        input_txt="/content/train_files_remaining.txt",
-        output_txt="/content/filtered_train_files4.txt",
-        box_json="/content/car_boxes4.json",
-        remaining_txt="/content/train_files_remaining2.txt",
+        input_txt="/content/train_files_remaining2.txt",
+        output_txt="/content/filtered_train_files5.txt",
+        box_json="/content/car_boxes5.json",
+        remaining_txt="/content/train_files_remaining.txt",
         data_path="gs://mde_data_bucket/kitti",
         num_images=500
     )
