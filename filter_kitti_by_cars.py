@@ -80,7 +80,7 @@ def main(input_txt, output_txt, box_json, remaining_txt, data_path, num_images=1
 if __name__ == '__main__':
     # Example call in Colab:
     main(
-        input_txt="/content/SPIdepth-training/splits/eigen_zhou/train_files_original.txt",
+        input_txt="/content/SPIdepth-training/splits/eigen_zhou/val_files_original.txt",
         #input_txt="/content/train_files_remaining.txt",
         output_txt="/content/filtered_val_files1.txt",
         box_json="/content/carval_boxes1.json",
