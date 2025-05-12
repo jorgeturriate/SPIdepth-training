@@ -153,7 +153,7 @@ class KITTIRAWDataset(KITTIDataset):
             depth_pil = pil.fromarray(depth_gt)
             depth_pil = self.apply_crop_and_resize(depth_pil, folder, frame_index, side)
             depth_gt = depth_pil.resize(self.full_res_shape, pil.NEAREST)
-            depth_gt = np.array(depth_pil)
+            depth_gt = np.array(depth_gt)
 
 
         if do_flip:
