@@ -24,3 +24,4 @@
 --eval_mono
 --post_process
 --num_workers 0
+--crop_box
