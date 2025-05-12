@@ -11,6 +11,7 @@ import skimage.transform
 import numpy as np
 import PIL.Image as pil
 import gcsfs
+import json
 
 from kitti_utils import generate_depth_map
 from .mono_dataset import MonoDataset
@@ -65,6 +66,18 @@ class KITTIDataset(MonoDataset):
         self.full_res_shape = (1242, 375)
         self.side_map = {"2": 2, "3": 3, "l": 2, "r": 3}
 
+        self.crop_box = kwargs.get('crop_box', False) # Use kwargs to get crop_box
+
+
+        if self.crop_box:
+            box_file = "train_car_boxes.json" if self.is_train else "val_car_boxes.json"
+            root_dir= os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+            box_path = os.path.join(root_dir, "splits", "eigen_zhou", box_file)
+            with open(box_path, 'r') as f:
+                self.crop_boxes = json.load(f)
+        else:
+            self.crop_boxes = {}
+
     def check_depth(self):
         line = self.filenames[0].split()
         scene_name = line[0]
@@ -80,10 +93,37 @@ class KITTIDataset(MonoDataset):
         else:
             local_path = os.path.join(self.data_path, velo_rel_path)
             return os.path.isfile(local_path)
+        
+    def apply_crop_and_resize(self, img, folder, frame_index, side):
+        key = f"{folder} {frame_index} {side}"
+        if key not in self.crop_boxes:
+            return img.resize((self.width, self.height), pil.BILINEAR if img.mode == "RGB" else pil.NEAREST)
+
+        x, y, w, h = self.crop_boxes[key]
+        
+        # Expand the box by 20% in all directions
+        expansion_ratio = 0.2
+        x_expand = int(w * expansion_ratio)
+        y_expand = int(h * expansion_ratio)
+
+        x0 = max(x - x_expand, 0)
+        y0 = max(y - y_expand, 0)
+        x1 = x + w + x_expand
+        y1 = y + h + y_expand
+
+        cropped = img.crop((x0, y0, x1, y1))
+        resized = cropped.resize((self.width, self.height), pil.BILINEAR if img.mode == "RGB" else pil.NEAREST)
+        return resized
+
+
 
     def get_color(self, folder, frame_index, side, do_flip):
         path = self.get_image_path(folder, frame_index, side)
         color = self.gcs.open_image(path)
+
+        if self.crop_box:
+            color = self.apply_crop_and_resize(color, folder, frame_index, side)
+
         if do_flip:
             color = color.transpose(pil.FLIP_LEFT_RIGHT)
         return color
@@ -107,6 +147,14 @@ class KITTIRAWDataset(KITTIDataset):
         depth_gt = generate_depth_map(calib_path, velo_path, self.side_map[side], use_gcs=True, gcs=self.gcs.fs, gcs_root=self.gcs.data_path)
         depth_gt = skimage.transform.resize(
             depth_gt, self.full_res_shape[::-1], order=0, preserve_range=True, mode='constant')
+        
+        if self.crop_box:
+            # Convert to PIL Image for cropping
+            depth_pil = pil.fromarray(depth_gt)
+            depth_pil = self.apply_crop_and_resize(depth_pil, folder, frame_index, side)
+            depth_gt = depth_pil.resize(self.full_res_shape, pil.NEAREST)
+            depth_gt = np.array(depth_pil)
+
 
         if do_flip:
             depth_gt = np.fliplr(depth_gt)
@@ -140,6 +188,10 @@ class KITTIDepthDataset(KITTIDataset):
         depth_path = self.gcs.get_file_path(folder, "proj_depth/groundtruth/image_0{}".format(self.side_map[side]), f_str)
 
         depth_gt = self.gcs.open_depth(depth_path)
+
+        if self.crop_box:
+            depth_gt = self.apply_crop_and_resize(depth_gt, folder, frame_index, side)
+
         depth_gt = depth_gt.resize(self.full_res_shape, pil.NEAREST)
         depth_gt = np.array(depth_gt).astype(np.float32) / 256
 

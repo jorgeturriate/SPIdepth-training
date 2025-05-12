@@ -340,6 +340,10 @@ class MonodepthOptions:
                                  help="if set will perform the flipping post processing "
                                       "from the original monodepth paper",
                                  action="store_true")
+        self.parser.add_argument("--crop_box",
+                                 help="if set, crop images around car bounding boxes for Kitti",
+                                 action="store_true",
+                                 default=False)
 
     def parse(self):
         self.options = self.parser.parse_args()

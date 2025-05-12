@@ -30,8 +30,8 @@ from collections import OrderedDict
 
 
 
-PROJECT = "SPIdepthTransfer"
-experiment_name="curriculum"
+PROJECT = "SPIdepth_Curriculum"
+experiment_name="carcrop"
 
 class TrainerCL:
     def __init__(self, options):
@@ -291,7 +291,7 @@ class TrainerCL:
 
             #Wandb loging
             should_log = True
-            if should_log and self.step % 5 == 0:
+            if should_log and self.step % 10 == 0:
               #wandb.log({f"Train/reprojection_loss": losses["loss"].item()}, step=self.step)
               wandb.log({
                     "Train/reprojection_loss": losses["loss"].item(),
@@ -310,8 +310,9 @@ class TrainerCL:
                     self.compute_depth_losses(inputs, outputs, losses)
 
                 self.log("train", inputs, outputs, losses)
-                if batch_idx % (self.opt.log_frequency*2 )== 0: 
-                    self.val() #Evaluate after the double of log_frequency
+                #if batch_idx % (self.opt.log_frequency*2 )== 0: 
+                #    self.val() #Evaluate after the double of log_frequency
+                self.val()
 
             self.step += 1
 
@@ -415,7 +416,7 @@ class TrainerCL:
     def val(self):
         """Validate the model on a single minibatch
         """
-        """self.set_eval()
+        self.set_eval()
         try:
             # inputs = self.val_iter.next() # for old pytorch
             inputs = next(self.val_iter) # for new pytorch
@@ -431,12 +432,19 @@ class TrainerCL:
                 self.compute_depth_losses(inputs, outputs, losses)
 
             self.log("val", inputs, outputs, losses)
+            # Log to W&B
+            wandb.log({
+                "Val/total_loss": losses["loss"].item(),
+                "Val/reprojection_loss": losses["reproj_loss"].item() ,
+                "Val/smoothness_loss": losses["smooth_loss"].item()
+            }, step=self.step)
+
             del inputs, outputs, losses
 
-        self.set_train()"""
+        self.set_train()
 
         """Validate the model on the entire validation set (used because of the small val test)"""
-        self.set_eval()
+        """self.set_eval()
 
         val_losses = []
         smooth_losses = []
@@ -471,7 +479,7 @@ class TrainerCL:
             "Val/smoothness_loss": avg_smooth
         }, step=self.step)
 
-        self.set_train()
+        self.set_train()"""
 
     def generate_images_pred(self, inputs, outputs):
         """Generate the warped (reprojected) color images for a minibatch.
