@@ -18,8 +18,8 @@ import json
 from utils import *
 from kitti_utils import *
 from layers import *
-#from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
-from curriculum_ssl_transfer import CurriculumLearnerSelfSupervised
+from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
+#from curriculum_ssl_transfer import CurriculumLearnerSelfSupervised
 
 import datasets
 import networks
@@ -164,9 +164,14 @@ class TrainerCL:
         num_train_samples = len(train_filenames)
         self.num_total_steps = num_train_samples // self.opt.batch_size * self.opt.num_epochs
 
+        """train_dataset = self.dataset(
+            self.opt.data_path, train_filenames, self.opt.height, self.opt.width,
+            self.opt.frame_ids, 1, is_train=True, img_ext=img_ext) # num_scales = 1"""
+        #Edited the train dataset to crop the car the image selecting the car
         train_dataset = self.dataset(
             self.opt.data_path, train_filenames, self.opt.height, self.opt.width,
-            self.opt.frame_ids, 1, is_train=True, img_ext=img_ext) # num_scales = 1
+            self.opt.frame_ids, 1, is_train=True, img_ext=img_ext, crop_box=self.opt.crop_box)
+        
         self.train_loader = DataLoader(
             train_dataset, self.opt.batch_size, True,
             num_workers=self.opt.num_workers, pin_memory=True, drop_last=True)
@@ -176,9 +181,14 @@ class TrainerCL:
             num_workers=self.opt.num_workers, pin_memory=True, drop_last=False)
 
 
+        """val_dataset = self.dataset(
+            self.opt.data_path, val_filenames, self.opt.height, self.opt.width,
+            self.opt.frame_ids, 1, is_train=False, img_ext=img_ext) # num_scales = 1"""
+        #Edited the val dataset to crop the car the image selecting the car
         val_dataset = self.dataset(
             self.opt.data_path, val_filenames, self.opt.height, self.opt.width,
-            self.opt.frame_ids, 1, is_train=False, img_ext=img_ext) # num_scales = 1
+            self.opt.frame_ids, 1, is_train=False, img_ext=img_ext, crop_box=self.opt.crop_box)
+        
         self.val_loader = DataLoader(
             val_dataset, self.opt.batch_size, True,
             num_workers=self.opt.num_workers, pin_memory=True, drop_last=True)
@@ -197,8 +207,8 @@ class TrainerCL:
 
         del train_loader_cl
 
-        if not os.path.exists("/content/scores_transfer.npy"):
-            self.curriculum_learner.score_and_save_losses("/content/scores_transfer.npy")
+        if not os.path.exists("/content/scores_self.npy"): #/content/scores_transfer.npy
+            self.curriculum_learner.score_and_save_losses("/content/scores_self.npy")
 
 
         self.writers = {}
@@ -270,8 +280,8 @@ class TrainerCL:
             epoch=self.epoch,
             total_epochs=self.opt.num_epochs,
             batch_size=self.opt.batch_size,
-            score_path="/content/scores_transfer.npy"
-            #score_path="/content/scores_self.npy"
+            #score_path="/content/scores_transfer.npy"
+            score_path="/content/scores_self.npy"
         )
 
         selected_size = self.curriculum_learner.pacing(self.epoch, self.opt.num_epochs, len(self.train_loader.dataset))
