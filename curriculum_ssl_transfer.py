@@ -24,6 +24,7 @@ class CurriculumLearnerSelfSupervised:
         self.pacing_function = pacing_function
         self.sample_scores = []
         self.opt= opt
+        self.opt.batch_size=1
         self.num_scales = len(self.opt.scales) # default=[0], we only perform single scale training
         self.num_input_frames = len(self.opt.frame_ids) # default=[0, -1, 1]
         self.num_pose_frames = 2 if self.opt.pose_model_input == "pairs" else self.num_input_frames # default=2

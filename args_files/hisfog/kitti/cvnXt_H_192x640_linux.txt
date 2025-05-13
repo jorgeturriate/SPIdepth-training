@@ -1,15 +1,15 @@
 --data_path gs://mde_data_bucket/kitti
---log_dir /content/logs/convnextv2_base
---model_name cvnXt_v2
+--log_dir /home/jturriatellallire/logs/fulltraining
+--model_name cvnXt_v2_base
 --dataset kitti
 --eval_split eigen
 --backbone convnextv2_base.fcmae_ft_in22k_in1k_384
 --height 192
 --width 512
 --log_frequency 20
---batch_size 8
+--batch_size 16
 --learning_rate 4e-5
---num_epochs 5
+--num_epochs 6
 --scheduler_step_size 10
 --model_dim 16
 --patch_size 16
@@ -19,8 +19,9 @@
 --min_depth 0.001
 --max_depth 80.0
 --use_stereo
---load_weights_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/
---pose_net_path /content/logs/convnext_v13_xxlarge
+--load_weights_folder /home/jturriatellallire/Pretrained_models/kitti/
+--pose_net_path /home/jturriatellallire/logs/fulltraining/models/weights_5
 --eval_mono
 --post_process
 --num_workers 0
+--crop_box
