@@ -24,6 +24,7 @@ class CurriculumLearnerSelfSupervised:
         self.pacing_function = pacing_function
         self.sample_scores = []
         self.opt= opt
+        self.opt.batch_size=1
         self.num_scales = len(self.opt.scales) # default=[0], we only perform single scale training
         self.num_input_frames = len(self.opt.frame_ids) # default=[0, -1, 1]
         self.num_pose_frames = 2 if self.opt.pose_model_input == "pairs" else self.num_input_frames # default=2
@@ -33,10 +34,10 @@ class CurriculumLearnerSelfSupervised:
             h = self.opt.height // (2 ** scale)
             w = self.opt.width // (2 ** scale)
 
-            self.backproject_depth[scale] = BackprojectDepth(self.opt.batch_size, h, w)
+            self.backproject_depth[scale] = BackprojectDepth(1, h, w)
             self.backproject_depth[scale].to(self.device)
 
-            self.project_3d[scale] = Project3D(self.opt.batch_size, h, w)
+            self.project_3d[scale] = Project3D(1, h, w)
             self.project_3d[scale].to(self.device)
 
         if not self.opt.no_ssim:
