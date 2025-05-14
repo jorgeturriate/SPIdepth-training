@@ -46,9 +46,9 @@ class CurriculumLearnerSelfSupervised:
         
         
         if model=='SPIdepth' and not os.path.exists("/content/scores_transfer.npy"):
-            self.models["encoder"] = networks.Unet(pretrained=False, backbone="convnextv2_huge.fcmae_ft_in22k_in1k_384", in_channels=3, num_classes=self.opt.model_dim, decoder_channels=self.opt.dec_channels)
-            self.models["depth"] = networks.Depth_Decoder_QueryTr(in_channels=self.opt.model_dim, patch_size=self.opt.patch_size, dim_out=self.opt.dim_out, embedding_dim=self.opt.model_dim, 
-                                                                    query_nums=self.opt.query_nums, num_heads=4, min_val=self.opt.min_depth, max_val=self.opt.max_depth)
+            self.models["encoder"] = networks.Unet(pretrained=False, backbone="convnextv2_huge.fcmae_ft_in22k_in1k_384", in_channels=3, num_classes=32, decoder_channels=(1024,512,256,128))
+            self.models["depth"] = networks.Depth_Decoder_QueryTr(in_channels=32, patch_size=32, dim_out=64, embedding_dim=32, 
+                                                                    query_nums=64, num_heads=4, min_val=0.001, max_val=80.0)
             self.models["pose"] = networks.PoseCNN(self.num_input_frames if self.opt.pose_model_input == "all" else 2)
 
             if not os.path.exists(model_path):
