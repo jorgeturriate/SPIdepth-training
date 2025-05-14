@@ -137,8 +137,15 @@ class CurriculumLearnerSelfSupervised:
     def process_batch(self, inputs):
         """Pass a minibatch through the network and generate images and losses
         """
+        target_height, target_width = 320, 1024  # Resolution expected by the pretrained model
         for key, ipt in inputs.items():
             inputs[key] = ipt.to(self.device)
+            if isinstance(ipt, torch.Tensor) and ipt.dim() == 4:
+                b, c, h, w = ipt.shape
+                if h != target_height or w != target_width:
+                    inputs[key] = torch.nn.functional.interpolate(
+                        ipt, size=(target_height, target_width), mode='bilinear', align_corners=False
+                    )
 
         if self.opt.pose_model_type == "shared": # default no
             # If we are using a shared encoder for both depth and pose (as advocated
