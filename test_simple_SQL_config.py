@@ -29,7 +29,7 @@ def test_simple(args):
     else:
         device = torch.device("cpu")
 
-    model = SQLdepth(opt)
+    model = SQLdepth(args)
 
     feed_height = args.height
     feed_width = args.width
