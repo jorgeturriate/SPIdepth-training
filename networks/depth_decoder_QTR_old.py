@@ -19,15 +19,27 @@ class Depth_Decoder_QueryTr(nn.Module):
         # self.summary_layer = PixelWiseDotProduct_for_summary()
         # self.dense_layer = PixelWiseDotProduct_for_dense()
         self.full_query_layer = FullQueryLayer()
-        self.bins_regressor = nn.Sequential(nn.Linear(embedding_dim*query_nums, 16*query_nums),
+        self.query_nums = query_nums
+        self.dim_out= dim_out
+
+
+        # Removed fixed input dim for bins_regressor
+        self.bins_regressor_layers = nn.ModuleList([
+            nn.LeakyReLU(),
+            nn.Linear(1024, 1024),
+            nn.LeakyReLU(),
+            nn.Linear(1024, dim_out)
+        ])
+
+        """self.bins_regressor = nn.Sequential(nn.Linear(embedding_dim*query_nums, 16*query_nums),
                                        nn.LeakyReLU(),
                                        nn.Linear(16*query_nums, 16*16),
                                        nn.LeakyReLU(),
-                                       nn.Linear(16*16, dim_out))
+                                       nn.Linear(16*16, dim_out))"""
 
         self.convert_to_prob = nn.Sequential(nn.Conv2d(query_nums, dim_out, kernel_size=1, stride=1, padding=0),
                                       nn.Softmax(dim=1))
-        self.query_nums = query_nums
+        
 
         self.min_val = min_val
         self.max_val = max_val
@@ -46,7 +58,20 @@ class Depth_Decoder_QueryTr(nn.Module):
 
         energy_maps, summarys = self.full_query_layer(x0, queries)
         bs, Q, E = summarys.shape
-        y = self.bins_regressor(summarys.view(bs, Q*E))
+        x= summarys.view(bs, Q * E)
+        #y = self.bins_regressor(summarys.view(bs, Q*E))
+        
+        # Dynamically build a linear layer on the first forward pass
+        if not hasattr(self, 'bins_regressor'):
+            in_features = x.shape[1]
+            self.bins_regressor = nn.Sequential(
+                nn.Linear(in_features, 1024),
+                *self.bins_regressor_layers
+            )
+            self.bins_regressor.to(x.device)
+
+        y = self.bins_regressor(x)
+
 
         if self.norm == 'linear':
             y = torch.relu(y)
@@ -58,7 +83,17 @@ class Depth_Decoder_QueryTr(nn.Module):
             y = torch.sigmoid(y)
         y = y / y.sum(dim=1, keepdim=True)
         
+        # Dynamically define convert_to_prob
+        if not hasattr(self, 'convert_to_prob') or self.convert_to_prob[0].in_channels != energy_maps.shape[1]:
+            self.convert_to_prob = nn.Sequential(
+                nn.Conv2d(energy_maps.shape[1], self.dim_out, kernel_size=1, stride=1, padding=0),
+                nn.Softmax(dim=1)
+            ).to(energy_maps.device)
+
+
         out = self.convert_to_prob(energy_maps)
+
+        # Compute bin edges
         bin_widths = (self.max_val - self.min_val) * y 
         bin_widths = nn.functional.pad(bin_widths, (1, 0), mode='constant', value=self.min_val)
         bin_edges = torch.cumsum(bin_widths, dim=1) 
@@ -72,3 +107,4 @@ class Depth_Decoder_QueryTr(nn.Module):
         outputs["disp", 0] = pred
         # outputs["bins", 0] = bin_edges
         return outputs
+
