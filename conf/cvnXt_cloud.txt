@@ -11,5 +11,5 @@
 --load_pt_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/
 --height 320
 --width 1024
---image_path /content/drive/MyDrive/SPIdepth_Training/DroneImages/images
+--image_path /content/drive/MyDrive/SPIdepth_Training/images
 --ext png
