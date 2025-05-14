@@ -31,8 +31,8 @@ class CurriculumLearnerSelfSupervised:
         self.backproject_depth = {}
         self.project_3d = {}
         for scale in self.opt.scales:
-            h = self.opt.height // (2 ** scale)
-            w = self.opt.width // (2 ** scale)
+            h = 320 // (2 ** scale)
+            w = 1024 // (2 ** scale)
 
             self.backproject_depth[scale] = BackprojectDepth(self.opt.batch_size, h, w)
             self.backproject_depth[scale].to(self.device)
@@ -247,7 +247,7 @@ class CurriculumLearnerSelfSupervised:
                 source_scale = scale
             else:
                 disp = F.interpolate(
-                    disp, [self.opt.height, self.opt.width], mode="bilinear", align_corners=False)
+                    disp, [320, 1024], mode="bilinear", align_corners=False)
                 source_scale = 0
 
                 depth = disp
@@ -352,7 +352,7 @@ class CurriculumLearnerSelfSupervised:
                 mask = outputs["predictive_mask"]["disp", scale]
                 if not self.opt.v1_multiscale:
                     mask = F.interpolate(
-                        mask, [self.opt.height, self.opt.width],
+                        mask, [320, 1024],
                         mode="bilinear", align_corners=False)
 
                 reprojection_losses *= mask
@@ -390,7 +390,7 @@ class CurriculumLearnerSelfSupervised:
 
             loss += to_optimise.mean()
             if color.shape[-2:] != disp.shape[-2:]:
-                disp = F.interpolate(disp, [self.opt.height, self.opt.width], mode="bilinear", align_corners=False)
+                disp = F.interpolate(disp, [320, 1024], mode="bilinear", align_corners=False)
             mean_disp = disp.mean(2, True).mean(3, True)
             norm_disp = disp / (mean_disp + 1e-7)
             # if GPU memory is not enough, you can downsample color instead
