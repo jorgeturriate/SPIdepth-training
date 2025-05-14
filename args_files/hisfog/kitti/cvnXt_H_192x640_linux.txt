@@ -1,5 +1,5 @@
 --data_path gs://mde_data_bucket/kitti
---log_dir /home/jturriatellallire/logs/fulltraining
+--log_dir /home/jturriatellallire/logs/curriculumtransfer
 --model_name cvnXt_v2_base
 --dataset kitti
 --eval_split eigen
