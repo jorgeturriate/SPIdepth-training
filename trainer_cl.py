@@ -284,7 +284,7 @@ class TrainerCL:
             #score_path="/home/jturriatellallire/scores_self.npy"
         )
 
-        selected_size = self.curriculum_learner.pacing(self.step, self.opt.num_total_steps, len(self.train_loader.dataset))
+        selected_size = self.curriculum_learner.pacing(self.step, self.num_total_steps, len(self.train_loader.dataset))
         wandb.log({"Curriculum/num_samples": selected_size}, step=self.step)
 
         for batch_idx, inputs in enumerate(curriculum_loader):
