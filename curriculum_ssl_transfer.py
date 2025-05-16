@@ -25,7 +25,7 @@ class CurriculumLearnerSelfSupervised:
         self.sample_scores = []
         self.sorted_indices = []
         self.opt= opt
-        self.opt.batch_size=1
+        self.batch_size=1
         self.num_scales = len(self.opt.scales) # default=[0], we only perform single scale training
         self.num_input_frames = len(self.opt.frame_ids) # default=[0, -1, 1]
         self.num_pose_frames = 2 if self.opt.pose_model_input == "pairs" else self.num_input_frames # default=2
@@ -35,10 +35,10 @@ class CurriculumLearnerSelfSupervised:
             h = 320 // (2 ** scale)
             w = 1024 // (2 ** scale)
 
-            self.backproject_depth[scale] = BackprojectDepth(self.opt.batch_size, h, w)
+            self.backproject_depth[scale] = BackprojectDepth(self.batch_size, h, w)
             self.backproject_depth[scale].to(self.device)
 
-            self.project_3d[scale] = Project3D(self.opt.batch_size, h, w)
+            self.project_3d[scale] = Project3D(self.batch_size, h, w)
             self.project_3d[scale].to(self.device)
 
         if not self.opt.no_ssim:
@@ -179,7 +179,7 @@ class CurriculumLearnerSelfSupervised:
             # in monodepthv1), then all images are fed separately through the depth encoder.
             all_color_aug = torch.cat([inputs[("color_aug", i, 0)] for i in self.opt.frame_ids])
             all_features = self.models["encoder"](all_color_aug)
-            all_features = [torch.split(f, self.opt.batch_size) for f in all_features]
+            all_features = [torch.split(f, self.batch_size) for f in all_features]
 
             features = {}
             for i, k in enumerate(self.opt.frame_ids):
