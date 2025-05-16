@@ -220,7 +220,7 @@ class BackprojectDepth(nn.Module):
         
         cam_points = torch.matmul(inv_K[:, :3, :3], pix_coords)
         cam_points = depth.view(batch_size, 1, -1) * cam_points
-        cam_points = torch.cat([cam_points, self.ones], 1)
+        cam_points = torch.cat([cam_points, ones], 1)
 
         return cam_points
 
