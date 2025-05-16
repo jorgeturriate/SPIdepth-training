@@ -277,7 +277,7 @@ class TrainerCL:
         self.set_train()
 
         curriculum_loader = self.curriculum_learner.get_curriculum_batches(
-            epoch=self.step,
+            step=self.step,
             total_steps=self.num_total_steps,
             batch_size=self.opt.batch_size,
             score_path="/home/jturriatellallire/scores_transfer.npy"
