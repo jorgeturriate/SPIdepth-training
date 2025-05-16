@@ -344,6 +344,20 @@ class MonodepthOptions:
                                  help="if set, crop images around car bounding boxes for Kitti",
                                  action="store_true",
                                  default=False)
+        
+        ## Curriculum learning settings
+        self.parser.add_argument("--a",
+                                 type=float,
+                                 help="Pacing function's scaling factor",
+                                 default=0.4)
+        self.parser.add_argument("--b",
+                                 type=float,
+                                 help="fraction of the full training data used initially",
+                                 default=0.2)
+        self.parser.add_argument("--p",
+                                 type=int,
+                                 help="used in quadratic pacing function to control the exponent",
+                                 default=1)
 
     def parse(self):
         self.options = self.parser.parse_args()

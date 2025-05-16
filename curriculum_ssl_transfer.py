@@ -23,6 +23,7 @@ class CurriculumLearnerSelfSupervised:
         self.device = device
         self.pacing_function = pacing_function
         self.sample_scores = []
+        self.sorted_indices = []
         self.opt= opt
         self.opt.batch_size=1
         self.num_scales = len(self.opt.scales) # default=[0], we only perform single scale training
@@ -76,27 +77,53 @@ class CurriculumLearnerSelfSupervised:
                 m.eval()
 
 
-    def pacing(self, epoch, total_epochs, total_samples):
-        """
-        Define how many samples to use at this stage of training.
-        Linear pacing is the default.
-        """
+    """def pacing(self, epoch, total_epochs, total_samples):
+        
+        #Define how many samples to use at this stage of training.
+        #Linear pacing is the default.
+        
         if self.pacing_function == "linear":
             return int((epoch + 1) / total_epochs * total_samples)
         else:
+            raise NotImplementedError(f"Pacing function '{self.pacing_function}' not implemented")"""
+        
+    def pacing(self, step, total_steps, total_samples):
+        """
+        Define how many samples to use at this stage of training.
+        Supports linear, quadratic, exponential, logarithmic, and step pacing functions.
+        """
+        Nb = int(total_samples * self.opt.b)  # fraction of full training data
+        aT = self.opt.a * total_steps  # parameter a times total epochs
+        t =step + 1  # current step (1-based index)
+
+        if self.pacing_function == "linear":
+            return int(Nb + self.opt.a * Nb * t / total_samples)
+        elif self.pacing_function == "quadratic":
+            return int(Nb + (total_samples * (1 - self.opt.b) / aT) * (t ** self.opt.p))
+        elif self.pacing_function == "exponential":
+            return int(Nb + (total_samples * (1 - self.opt.b) / (np.exp(10) - 1)) * (np.exp(10 * t / aT) - 1))
+        elif self.pacing_function == "logarithmic":
+            return int(Nb + total_samples * (1 - self.opt.b) * (1 + (1 / 10) * np.log(t / aT + np.exp(-10))))
+        elif self.pacing_function == "step":
+            return int(Nb + total_samples * (t / aT))
+        else:
             raise NotImplementedError(f"Pacing function '{self.pacing_function}' not implemented")
 
-    def get_curriculum_batches(self, epoch, total_epochs, batch_size, score_path="sample_scores.npy"):
+
+    def get_curriculum_batches(self, step, total_steps, batch_size, score_path="sample_scores.npy"):
         """
-        Return curriculum batches for this epoch based on stored scores.
+        Return a DataLoader for the current step based on the pacing function and stored scores
         """
         if len(self.sample_scores) == 0:
             self.load_scores(score_path)
-
-        selected_size = self.pacing(epoch, total_epochs, len(self.sample_scores))
+        
+        # Determine the number of samples to use at this stage of training
+        selected_size = self.pacing(step, total_steps, len(self.sample_scores))
         selected_indices = self.sorted_indices[:selected_size]
 
+        # Create a subset of the dataset based on selected indices
         selected_subset = torch.utils.data.Subset(self.dataloader.dataset, selected_indices)
+        # Create a DataLoader for the selected subset
         selected_loader = torch.utils.data.DataLoader(
             selected_subset, batch_size=batch_size, shuffle=True, num_workers=self.opt.num_workers, pin_memory=True
         )

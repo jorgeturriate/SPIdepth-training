@@ -277,14 +277,14 @@ class TrainerCL:
         self.set_train()
 
         curriculum_loader = self.curriculum_learner.get_curriculum_batches(
-            epoch=self.epoch,
-            total_epochs=self.opt.num_epochs,
+            epoch=self.step,
+            total_steps=self.num_total_steps,
             batch_size=self.opt.batch_size,
             score_path="/home/jturriatellallire/scores_transfer.npy"
             #score_path="/home/jturriatellallire/scores_self.npy"
         )
 
-        selected_size = self.curriculum_learner.pacing(self.epoch, self.opt.num_epochs, len(self.train_loader.dataset))
+        selected_size = self.curriculum_learner.pacing(self.step, self.opt.num_total_steps, len(self.train_loader.dataset))
         wandb.log({"Curriculum/num_samples": selected_size}, step=self.step)
 
         for batch_idx, inputs in enumerate(curriculum_loader):
