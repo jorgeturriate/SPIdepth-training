@@ -236,11 +236,12 @@ class ProjectDepth(nn.Module):
         # self.eps = eps
 
     def forward(self, points, K, T):
+        batch_size= points.shape[0]
         P = torch.matmul(K, T)[:, :3, :]
         cam_points = torch.matmul(P, points)
         pix_coords = cam_points[:, 2, :] # z channel, depth
         pix_coords = pix_coords.unsqueeze(1)
-        pix_coords = pix_coords.view(self.batch_size, 1, self.height, self.width)
+        pix_coords = pix_coords.view(batch_size, 1, self.height, self.width)
         return pix_coords
 
 class Project3D(nn.Module):
@@ -255,12 +256,13 @@ class Project3D(nn.Module):
         self.eps = eps
 
     def forward(self, points, K, T):
+        batch_size= points.shape[0]
         P = torch.matmul(K, T)[:, :3, :]
 
         cam_points = torch.matmul(P, points)
 
         pix_coords = cam_points[:, :2, :] / (cam_points[:, 2, :].unsqueeze(1) + self.eps)
-        pix_coords = pix_coords.view(self.batch_size, 2, self.height, self.width)
+        pix_coords = pix_coords.view(batch_size, 2, self.height, self.width)
         pix_coords = pix_coords.permute(0, 2, 3, 1)
         pix_coords[..., 0] /= self.width - 1
         pix_coords[..., 1] /= self.height - 1
