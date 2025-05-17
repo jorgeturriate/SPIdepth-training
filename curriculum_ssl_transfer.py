@@ -95,20 +95,22 @@ class CurriculumLearnerSelfSupervised:
         Nb = int(total_samples * self.opt.b)  # fraction of full training data
         aT = self.opt.a * total_steps  # parameter a times total epochs
         t =step + 1  # current step (1-based index)
+        pacing_result=0
 
         if self.pacing_function == "linear":
-            return int(Nb + self.opt.a * Nb * t / total_samples)
+            pacing_result= int(Nb + ((1 - self.opt.b) * total_samples / aT) * t)
         elif self.pacing_function == "quadratic":
-            return int(Nb + (total_samples * (1 - self.opt.b) / aT) * (t ** self.opt.p))
+            pacing_result= int(Nb + (total_samples * (1 - self.opt.b) / aT) * (t ** self.opt.p))
         elif self.pacing_function == "exponential":
-            return int(Nb + (total_samples * (1 - self.opt.b) / (np.exp(10) - 1)) * (np.exp(10 * t / aT) - 1))
+            pacing_result= int(Nb + (total_samples * (1 - self.opt.b) / (np.exp(10) - 1)) * (np.exp(10 * t / aT) - 1))
         elif self.pacing_function == "logarithmic":
-            return int(Nb + total_samples * (1 - self.opt.b) * (1 + (1 / 10) * np.log(t / aT + np.exp(-10))))
+            pacing_result= int(Nb + total_samples * (1 - self.opt.b) * (1 + (1 / 10) * np.log(t / aT + np.exp(-10))))
         elif self.pacing_function == "step":
-            return int(Nb + total_samples * (t / aT))
+            pacing_result= int(Nb + total_samples * (0 if (t / aT)< 1 else 1))
         else:
             raise NotImplementedError(f"Pacing function '{self.pacing_function}' not implemented")
-
+        
+        return min(pacing_result, total_samples)
 
     def get_curriculum_batches(self, step, total_steps, batch_size, score_path="sample_scores.npy"):
         """

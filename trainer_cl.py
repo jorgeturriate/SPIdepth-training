@@ -251,29 +251,30 @@ class TrainerCL:
             m.eval()
 
     def train(self):
-        """Run the entire training pipeline
+        """Run the entire training pipeline using curriculum learning per step
         """
-        self.epoch = 0
         self.step = 0
         self.start_time = time.time()
-        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.epoch}-lr{self.opt.learning_rate}--{uuid.uuid4()}"
+
+        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.step}-lr{self.opt.learning_rate}--{uuid.uuid4()}"
         name = f"{experiment_name}_{run_id}"
         #wandb.init(project=PROJECT, name=name, config=self.opt, dir='.')
         wandb.init(project=PROJECT, name=name, config=self.opt, dir=self.opt.log_dir)
         self.save_model()
-        for self.epoch in range(self.opt.num_epochs):
-            wandb.log({"Epoch": self.epoch}, step=self.step) #Added to log in wandb
-            self.run_epoch()
+        while self.step < self.num_total_steps:
+            self.run_step()
             self.model_lr_scheduler.step()
-            if (self.epoch + 1) % self.opt.save_frequency == 0:
+            save_frequency= 300
+
+            if (self.step + 1) % save_frequency == 0:
                 self.save_model()
 
-    def run_epoch(self):
-        """Run a single epoch of training and validation
+    def run_step(self):
+        """Run a single curriculum learning step (mini-epoch over a subset).
         """
         # self.model_lr_scheduler.step()
 
-        print("Training")
+        print("Training step {self.step}")
         self.set_train()
 
         curriculum_loader = self.curriculum_learner.get_curriculum_batches(
@@ -701,9 +702,9 @@ class TrainerCL:
         time_sofar = time.time() - self.start_time
         training_time_left = (
             self.num_total_steps / self.step - 1.0) * time_sofar if self.step > 0 else 0
-        print_string = "epoch {:>3} | batch {:>6} | examples/s: {:5.1f}" + \
+        print_string = "step {:>3} | batch {:>6} | examples/s: {:5.1f}" + \
             " | loss: {:.5f} | time elapsed: {} | time left: {}"
-        print(print_string.format(self.epoch, batch_idx, samples_per_sec, loss,
+        print(print_string.format(self.step, batch_idx, samples_per_sec, loss,
                                   sec_to_hm_str(time_sofar), sec_to_hm_str(training_time_left)))
 
     def log(self, mode, inputs, outputs, losses):
@@ -754,7 +755,7 @@ class TrainerCL:
     def save_model(self):
         """Save model weights to disk, default /home/Process3/tmp/mdp/models/
         """
-        save_folder = os.path.join(self.log_path, "models", "weights_{}".format(self.epoch))
+        save_folder = os.path.join(self.log_path, "models", "weights_{}".format(self.step))
         if not os.path.exists(save_folder):
             os.makedirs(save_folder)
 
