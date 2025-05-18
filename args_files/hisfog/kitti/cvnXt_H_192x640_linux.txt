@@ -9,7 +9,7 @@
 --log_frequency 20
 --batch_size 16
 --learning_rate 4e-5
---num_epochs 6
+--num_epochs 10
 --scheduler_step_size 10
 --model_dim 16
 --patch_size 16
@@ -25,4 +25,4 @@
 --post_process
 --num_workers 0
 --crop_box
---a 0.4
+--a 0.6

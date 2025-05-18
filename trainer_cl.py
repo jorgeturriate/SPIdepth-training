@@ -256,7 +256,7 @@ class TrainerCL:
         self.step = 0
         self.start_time = time.time()
 
-        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.step}-lr{self.opt.learning_rate}--{uuid.uuid4()}"
+        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.step}-lr{self.opt.learning_rate}-a{self.opt.a}--{uuid.uuid4()}"
         name = f"{experiment_name}_{run_id}"
         #wandb.init(project=PROJECT, name=name, config=self.opt, dir='.')
         wandb.init(project=PROJECT, name=name, config=self.opt, dir=self.opt.log_dir)
@@ -264,17 +264,15 @@ class TrainerCL:
         while self.step < self.num_total_steps:
             self.run_step()
             self.model_lr_scheduler.step()
-            save_frequency= 300
+        self.save_model()
 
-            if (self.step + 1) % save_frequency == 0:
-                self.save_model()
 
     def run_step(self):
         """Run a single curriculum learning step (mini-epoch over a subset).
         """
         # self.model_lr_scheduler.step()
 
-        print("Training step {self.step}")
+        print(f"Training step {self.step}")
         self.set_train()
 
         curriculum_loader = self.curriculum_learner.get_curriculum_batches(
@@ -289,6 +287,9 @@ class TrainerCL:
         wandb.log({"Curriculum/num_samples": selected_size}, step=self.step)
 
         for batch_idx, inputs in enumerate(curriculum_loader):
+            save_frequency= 300
+            if (self.step + 1) % save_frequency == 0:
+                self.save_model()
 
             before_op_time = time.time()
 

@@ -255,6 +255,7 @@ class Trainer:
             self.model_lr_scheduler.step()
             if (self.epoch + 1) % self.opt.save_frequency == 0:
                 self.save_model()
+        self.save_model()
 
     def run_epoch(self):
         """Run a single epoch of training and validation
