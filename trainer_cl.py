@@ -256,7 +256,7 @@ class TrainerCL:
         self.step = 0
         self.start_time = time.time()
 
-        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.step}-lr{self.opt.learning_rate}-a{self.opt.a}--{uuid.uuid4()}"
+        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.num_total_steps}-lr{self.opt.learning_rate}-a{self.opt.a}--{uuid.uuid4()}"
         name = f"{experiment_name}_{run_id}"
         #wandb.init(project=PROJECT, name=name, config=self.opt, dir='.')
         wandb.init(project=PROJECT, name=name, config=self.opt, dir=self.opt.log_dir)

@@ -244,7 +244,7 @@ class Trainer:
         self.epoch = 0
         self.step = 0
         self.start_time = time.time()
-        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.epoch}-lr{self.opt.learning_rate}--{uuid.uuid4()}"
+        run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{self.opt.batch_size}-tep{self.opt.num_epochs}-lr{self.opt.learning_rate}--{uuid.uuid4()}"
         name = f"{experiment_name}_{run_id}"
         #wandb.init(project=PROJECT, name=name, config=self.opt, dir='.')
         wandb.init(project=PROJECT, name=name, config=self.opt, dir=self.opt.log_dir)
