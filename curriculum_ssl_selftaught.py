@@ -24,7 +24,7 @@ class CurriculumLearnerSelfSupervised:
         self.pacing_function = pacing_function
         self.sample_scores = []
         self.opt= opt
-        self.opt.batch_size=1
+        self.batch_size=1
         self.num_scales = len(self.opt.scales) # default=[0], we only perform single scale training
         self.num_input_frames = len(self.opt.frame_ids) # default=[0, -1, 1]
         self.num_pose_frames = 2 if self.opt.pose_model_input == "pairs" else self.num_input_frames # default=2
@@ -34,10 +34,10 @@ class CurriculumLearnerSelfSupervised:
             h = self.opt.height // (2 ** scale)
             w = self.opt.width // (2 ** scale)
 
-            self.backproject_depth[scale] = BackprojectDepth(1, h, w)
+            self.backproject_depth[scale] = BackprojectDepth(self.batch_size, h, w)
             self.backproject_depth[scale].to(self.device)
 
-            self.project_3d[scale] = Project3D(1, h, w)
+            self.project_3d[scale] = Project3D(self.batch_size, h, w)
             self.project_3d[scale].to(self.device)
 
         if not self.opt.no_ssim:
@@ -45,7 +45,7 @@ class CurriculumLearnerSelfSupervised:
             self.ssim.to(self.device)
         
         
-        if model=='SPIdepth' and not os.path.exists("/content/scores_self.npy"):
+        if model=='SPIdepth' and not os.path.exists("/home/jturriatellallire/scores_self.npy"):
             self.models["encoder"] = networks.Unet(pretrained=False, backbone=self.opt.backbone, in_channels=3, num_classes=self.opt.model_dim, decoder_channels=self.opt.dec_channels)
             self.models["depth"] = networks.Depth_Decoder_QueryTr(in_channels=self.opt.model_dim, patch_size=self.opt.patch_size, dim_out=self.opt.dim_out, embedding_dim=self.opt.model_dim, 
                                                                     query_nums=self.opt.query_nums, num_heads=4, min_val=self.opt.min_depth, max_val=self.opt.max_depth)
@@ -81,27 +81,45 @@ class CurriculumLearnerSelfSupervised:
                 m.eval()
 
 
-    def pacing(self, epoch, total_epochs, total_samples):
+    def pacing(self, step, total_steps, total_samples):
         """
         Define how many samples to use at this stage of training.
-        Linear pacing is the default.
+        Supports linear, quadratic, exponential, logarithmic, and step pacing functions.
         """
+        Nb = int(total_samples * self.opt.b)  # fraction of full training data
+        aT = self.opt.a * total_steps  # parameter a times total epochs
+        t =step + 1  # current step (1-based index)
+        pacing_result=0
+
         if self.pacing_function == "linear":
-            return int((epoch + 1) / total_epochs * total_samples)
+            pacing_result= int(Nb + ((1 - self.opt.b) * total_samples / aT) * t)
+        elif self.pacing_function == "quadratic":
+            pacing_result= int(Nb + (total_samples * (1 - self.opt.b) / aT) * (t ** self.opt.p))
+        elif self.pacing_function == "exponential":
+            pacing_result= int(Nb + (total_samples * (1 - self.opt.b) / (np.exp(10) - 1)) * (np.exp(10 * t / aT) - 1))
+        elif self.pacing_function == "logarithmic":
+            pacing_result= int(Nb + total_samples * (1 - self.opt.b) * (1 + (1 / 10) * np.log(t / aT + np.exp(-10))))
+        elif self.pacing_function == "step":
+            pacing_result= int(Nb + total_samples * (0 if (t / aT)< 1 else 1))
         else:
             raise NotImplementedError(f"Pacing function '{self.pacing_function}' not implemented")
+        
+        return min(pacing_result, total_samples)
 
-    def get_curriculum_batches(self, epoch, total_epochs, batch_size, score_path="sample_scores.npy"):
+    def get_curriculum_batches(self, step, total_steps, batch_size, score_path="sample_scores.npy"):
         """
-        Return curriculum batches for this epoch based on stored scores.
+        Return a DataLoader for the current step based on the pacing function and stored scores
         """
         if len(self.sample_scores) == 0:
             self.load_scores(score_path)
-
-        selected_size = self.pacing(epoch, total_epochs, len(self.sample_scores))
+        
+        # Determine the number of samples to use at this stage of training
+        selected_size = self.pacing(step, total_steps, len(self.sample_scores))
         selected_indices = self.sorted_indices[:selected_size]
 
+        # Create a subset of the dataset based on selected indices
         selected_subset = torch.utils.data.Subset(self.dataloader.dataset, selected_indices)
+        # Create a DataLoader for the selected subset
         selected_loader = torch.utils.data.DataLoader(
             selected_subset, batch_size=batch_size, shuffle=True, num_workers=self.opt.num_workers, pin_memory=True
         )
@@ -150,7 +168,7 @@ class CurriculumLearnerSelfSupervised:
             # in monodepthv1), then all images are fed separately through the depth encoder.
             all_color_aug = torch.cat([inputs[("color_aug", i, 0)] for i in self.opt.frame_ids])
             all_features = self.models["encoder"](all_color_aug)
-            all_features = [torch.split(f, self.opt.batch_size) for f in all_features]
+            all_features = [torch.split(f, self.batch_size) for f in all_features]
 
             features = {}
             for i, k in enumerate(self.opt.frame_ids):
