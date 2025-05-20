@@ -9,7 +9,7 @@
 --log_frequency 20
 --batch_size 16
 --learning_rate 4e-5
---num_epochs 10
+--num_epochs 7
 --scheduler_step_size 10
 --model_dim 16
 --patch_size 16
