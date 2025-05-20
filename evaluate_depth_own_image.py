@@ -4,6 +4,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from glob import glob
+from IPython.display import display, clear_output
 
 MIN_DEPTH = 1e-3
 MAX_DEPTH = 80
@@ -37,7 +38,8 @@ def visualize(gt, pred, idx, save_dir=None):
         plt.savefig(os.path.join(save_dir, f"compare_{idx:03d}.png"))
         plt.close()
     else:
-        plt.show()
+        display(fig)
+        plt.close()
 
 
 def main(pred_path, gt_path, image_format="uint16", vis_every=20, save_vis=False):
