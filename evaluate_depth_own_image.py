@@ -99,4 +99,4 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
-    main(args.pred_path, args.gt_path, args.format)
+    main(args.pred_path, args.gt_path, args.format, args.vis_every, args.save_vis)
