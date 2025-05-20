@@ -358,6 +358,11 @@ class MonodepthOptions:
                                  type=int,
                                  help="used in quadratic pacing function to control the exponent",
                                  default=1)
+        self.parser.add_argument("--pacing",
+                                 type=str,
+                                 help="used to define the pacing function",
+                                 default="linear",
+                                 choices=["linear", "quadratic","exponential","logarithmic","step"])
 
     def parse(self):
         self.options = self.parser.parse_args()

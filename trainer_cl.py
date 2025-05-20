@@ -201,7 +201,7 @@ class TrainerCL:
             model="SPIdepth",
             dataloader=train_loader_cl,
             model_path=self.opt.model_path,  # adjust to your config
-            pacing_function="linear",  # or "quadratic" if you add support
+            pacing_function=self.opt.pacing,  # default is linear "quadratic" if you add support
             device=self.device
         )
 
