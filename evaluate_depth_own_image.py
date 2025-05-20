@@ -22,16 +22,18 @@ def compute_errors(gt, pred):
     sq_rel = np.mean(((gt - pred) ** 2) / gt)
     return abs_rel, sq_rel, rmse, rmse_log, a1, a2, a3
 
-def visualize(gt, pred, idx, save_dir=None):
+def visualize(gt, pred, idx, metrics,save_dir=None):
+    abs_rel, sq_rel, rmse, rmse_log, a1, a2, a3 = metrics
     fig, axs = plt.subplots(1, 2, figsize=(12, 4))
     axs[0].imshow(gt, cmap='plasma', vmin=MIN_DEPTH, vmax=MAX_DEPTH)
     axs[0].set_title("Ground Truth")
     axs[0].axis('off')
 
     axs[1].imshow(pred, cmap='plasma', vmin=MIN_DEPTH, vmax=MAX_DEPTH)
-    axs[1].set_title("Prediction (scaled)")
+    axs[1].set_title(f"Prediction (scaled)\nabs_rel={abs_rel:.3f}, rmse={rmse:.2f}")
     axs[1].axis('off')
 
+    plt.suptitle(f"Sample {idx}")
     plt.tight_layout()
     if save_dir:
         os.makedirs(save_dir, exist_ok=True)
@@ -80,10 +82,14 @@ def main(pred_path, gt_path, image_format="uint16", vis_every=20, save_vis=False
         pred = np.clip(pred, MIN_DEPTH, MAX_DEPTH)
         gt = np.clip(gt, MIN_DEPTH, MAX_DEPTH)
 
-        errors.append(compute_errors(gt[mask], pred[mask]))
+        metrics = compute_errors(gt[mask], pred[mask])
+        errors.append(metrics)
         # Visualize every N samples
         if vis_every > 0 and idx % vis_every == 0:
-            visualize(gt, pred, idx, "/content/vis" if save_vis else None)
+            print(f"\n→ Image {idx}:")
+            print(("    {:>8} | " * 7).format("abs_rel", "sq_rel", "rmse", "rmse_log", "a1", "a2", "a3"))
+            print(("    {:8.3f}   " * 7).format(*metrics))
+            visualize(gt, pred, idx, metrics, "/content/vis" if save_vis else None)
 
     # Print results
     mean_errors = np.mean(errors, axis=0)
