@@ -81,7 +81,7 @@ def main(pred_path, gt_path, image_format="uint16", vis_every=20, save_vis=False
         errors.append(compute_errors(gt[mask], pred[mask]))
         # Visualize every N samples
         if vis_every > 0 and idx % vis_every == 0:
-            visualize(gt, pred, idx, save_vis)
+            visualize(gt, pred, idx, "/content/vis" if save_vis else None)
 
     # Print results
     mean_errors = np.mean(errors, axis=0)
