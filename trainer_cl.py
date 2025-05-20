@@ -31,7 +31,7 @@ from collections import OrderedDict
 
 
 PROJECT = "SPIdepth_Curriculum_Transfer"
-experiment_name="carcrop"
+experiment_name="carcrop_quadratic"
 
 class TrainerCL:
     def __init__(self, options):
