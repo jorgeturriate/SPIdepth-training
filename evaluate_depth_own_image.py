@@ -81,7 +81,7 @@ def main(pred_path, gt_path, image_format="uint16", vis_every=20, save_vis=False
         errors.append(compute_errors(gt[mask], pred[mask]))
         # Visualize every N samples
         if vis_every > 0 and idx % vis_every == 0:
-            visualize(gt, pred, idx, save_dir="depth_vis" if save_vis else None)
+            visualize(gt, pred, idx, save_vis)
 
     # Print results
     mean_errors = np.mean(errors, axis=0)
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     parser.add_argument("--format", type=str, default="uint16", choices=["uint16", "colormap"],
                         help="Format of input images if PNG: 'uint16' for raw depth, 'colormap' for visualization only")
     parser.add_argument("--vis_every", type=int, default=20, help="Visualize every N images")
-    parser.add_argument("--save_vis", action="store_true", help="Save comparison plots")
+    parser.add_argument("--save_vis", default=False , action="store_true", help="Save comparison plots")
 
 
     args = parser.parse_args()
