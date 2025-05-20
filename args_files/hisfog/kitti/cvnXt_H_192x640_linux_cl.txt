@@ -1,5 +1,5 @@
 --data_path gs://mde_data_bucket/kitti
---log_dir /home/jturriatellallire/logs/curriculumtransfer
+--log_dir /home/jturriatellallire/logs/curriculumtransfer_quadratic
 --model_name cvnXt_v2_base
 --dataset kitti
 --eval_split eigen
@@ -26,3 +26,5 @@
 --num_workers 0
 --crop_box
 --a 0.6
+--p 2
+--pacing quadratic
