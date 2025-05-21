@@ -23,4 +23,5 @@
 --load_weights_folder /content/logs/Pretrained_models/kitti/
 --eval_mono
 --post_process
+--num_workers 0
 
