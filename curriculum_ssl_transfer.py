@@ -100,7 +100,7 @@ class CurriculumLearnerSelfSupervised:
         if self.pacing_function == "linear":
             pacing_result= int(Nb + ((1 - self.opt.b) * total_samples / aT) * t)
         elif self.pacing_function == "quadratic":
-            pacing_result= int(Nb + (total_samples * (1 - self.opt.b) / (aT)**(self.opt.p)) * (t ** self.opt.p))
+            pacing_result= int(Nb + (total_samples * (1 - self.opt.b) / ((aT)**(self.opt.p))) * (t ** self.opt.p))
         elif self.pacing_function == "exponential":
             pacing_result= int(Nb + (total_samples * (1 - self.opt.b) / (np.exp(10) - 1)) * (np.exp(10 * t / aT) - 1))
         elif self.pacing_function == "logarithmic":
