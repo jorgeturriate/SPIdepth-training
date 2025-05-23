@@ -30,8 +30,8 @@ from collections import OrderedDict
 
 
 
-PROJECT = "SPIdepth_Curriculum_Transfer"
-experiment_name="carcrop_quadratic"
+PROJECT = "SPIdepth_Curriculum_Lite"
+experiment_name="carcrop_linear"
 
 class TrainerCL:
     def __init__(self, options):
