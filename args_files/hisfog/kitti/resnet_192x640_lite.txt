@@ -3,7 +3,7 @@
 --model_name res_088
 --dataset kitti 
 --eval_split eigen
---backbone resnet_lite
+--backbone resnet18_lite
 --height 192 
 --width 640
 --batch_size 16

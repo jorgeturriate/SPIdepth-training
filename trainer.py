@@ -29,7 +29,7 @@ from collections import OrderedDict
 
 
 PROJECT = "SPIdepth_VanillaTraining_lite"
-experiment_name="resnetlite"
+experiment_name="resnet18lite"
 
 class Trainer:
     def __init__(self, options):
