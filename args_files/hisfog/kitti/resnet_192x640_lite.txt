@@ -1,5 +1,5 @@
 --data_path gs://mde_data_bucket/kitti
---log_dir /content/logs/full_resnetlite
+--log_dir /home/jturriatellallire/logs/full_resnetlite
 --model_name res_088
 --dataset kitti 
 --eval_split eigen
@@ -21,7 +21,7 @@
 --pose_net_path /mnt/bn/videoarc-depthestimation-disk1/wangyouhong/exps/tmp/stereo_lite_320x1024/mdp/models/weights_13/
 --diff_lr
 --use_stereo
---load_weights_folder /content/logs/Pretrained_models/kitti/
+--load_weights_folder /home/jturriatellallire/logs/Pretrained_models/kitti/
 --eval_mono
 --post_process
 --num_workers 0
