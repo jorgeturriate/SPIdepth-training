@@ -8,7 +8,7 @@
 --width 640
 --batch_size 16
 --log_frequency 20
---num_epochs 3
+--num_epochs 6
 --scheduler_step_size 15
 --num_layers 18
 --num_features 256
