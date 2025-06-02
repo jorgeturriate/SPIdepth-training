@@ -82,7 +82,7 @@ def evaluate(opt):
         decoder_path = os.path.join(opt.load_weights_folder, "depth.pth")
 
         encoder_dict = torch.load(encoder_path)
-        print(encoder_dict.items())
+        print(k for k,v in encoder_dict.items())
 
         dataset = datasets.KITTIRAWDataset(opt.data_path, filenames,
                                            encoder_dict['height'], encoder_dict['width'],
