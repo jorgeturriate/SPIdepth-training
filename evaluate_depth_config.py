@@ -111,8 +111,11 @@ def evaluate(opt):
         encoder_dict = {k.replace("module.", ""): v for k, v in encoder_dict.items()}
         encoder.load_state_dict({k: v for k, v in encoder_dict.items() if k in model_dict})
 
+        decoder_dict= torch.load(decoder_path)
+        decoder_dict = {k.replace("module.", ""): v for k, v in decoder_dict.items()}
+
         #encoder.load_state_dict({k: v for k, v in encoder_dict.items() if k in model_dict})
-        depth_decoder.load_state_dict(torch.load(decoder_path))
+        depth_decoder.load_state_dict(decoder_dict)
 
         encoder.cuda()
         encoder = torch.nn.DataParallel(encoder)
