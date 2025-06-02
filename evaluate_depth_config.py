@@ -205,6 +205,21 @@ def evaluate(opt):
 
         print("-> No ground truth is available for the KITTI benchmark, so not evaluating. Done.")
         quit()
+    elif opt.eval_split == 'eigen':
+        save_dir = os.path.join(opt.load_weights_folder, "eigen_predictions")
+        print("-> Saving out eigen predictions to {}".format(save_dir))
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        for idx in range(len(pred_disps)):
+            disp_resized = cv2.resize(pred_disps[idx], (1216, 352))
+            depth = STEREO_SCALE_FACTOR / disp_resized
+            depth = np.clip(depth, 0, 80)
+            depth = np.uint16(depth * 256)
+            save_path = os.path.join(save_dir, "{:010d}.png".format(idx))
+            cv2.imwrite(save_path, depth)
+
+        print("-> Saving predictions as images")
 
     gt_path = os.path.join(splits_dir, opt.eval_split, "gt_depths.npz")
     gt_depths = np.load(gt_path, fix_imports=True, encoding='latin1', allow_pickle=True)["data"]
