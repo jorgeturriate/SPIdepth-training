@@ -25,6 +25,6 @@
 --eval_mono
 --post_process
 --num_workers 0
---a 0.6
---p 1
---pacing linear
+--a 0.4
+--p 2
+--pacing quadratic
