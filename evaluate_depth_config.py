@@ -82,7 +82,7 @@ def evaluate(opt):
         decoder_path = os.path.join(opt.load_weights_folder, "depth.pth")
 
         encoder_dict = torch.load(encoder_path)
-        print("\n".join(encoder_dict.keys()))
+        #print("\n".join(encoder_dict.keys()))
 
         dataset = datasets.KITTIRAWDataset(opt.data_path, filenames,
                                            encoder_dict['height'], encoder_dict['width'],
@@ -107,7 +107,11 @@ def evaluate(opt):
                                                    query_nums=opt.query_nums, num_heads=4, min_val=opt.min_depth, max_val=opt.max_depth)
 
         model_dict = encoder.state_dict()
+        # Remove 'module.' prefix from keys
+        encoder_dict = {k.replace("module.", ""): v for k, v in encoder_dict.items()}
         encoder.load_state_dict({k: v for k, v in encoder_dict.items() if k in model_dict})
+
+        #encoder.load_state_dict({k: v for k, v in encoder_dict.items() if k in model_dict})
         depth_decoder.load_state_dict(torch.load(decoder_path))
 
         encoder.cuda()
