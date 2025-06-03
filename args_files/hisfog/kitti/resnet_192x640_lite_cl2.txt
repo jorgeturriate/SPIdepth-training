@@ -1,5 +1,5 @@
 --data_path gs://mde_data_bucket/kitti
---log_dir /home/jturriatellallire/logs/full_lineara06ep3_cl_2
+--log_dir /home/jturriatellallire/logs/full_lineara08ep6_cl_2
 --model_name res_088
 --dataset kitti 
 --eval_split eigen
@@ -25,6 +25,6 @@
 --eval_mono
 --post_process
 --num_workers 0
---a 0.6
+--a 0.8
 --p 1
 --pacing linear
