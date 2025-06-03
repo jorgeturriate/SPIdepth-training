@@ -1,5 +1,5 @@
 --data_path gs://mde_data_bucket/kitti
---log_dir /home/jturriatellallire/logs/full_resnetlite_cl
+--log_dir /home/jturriatellallire/logs/full_linear_a08_ep3_cl
 --model_name res_088
 --dataset kitti 
 --eval_split eigen
@@ -8,7 +8,7 @@
 --width 640
 --batch_size 16
 --log_frequency 20
---num_epochs 6
+--num_epochs 3
 --scheduler_step_size 15
 --num_layers 18
 --num_features 256
@@ -25,6 +25,6 @@
 --eval_mono
 --post_process
 --num_workers 0
---a 0.4
---p 2
---pacing quadratic
+--a 0.8
+--p 1
+--pacing linear
