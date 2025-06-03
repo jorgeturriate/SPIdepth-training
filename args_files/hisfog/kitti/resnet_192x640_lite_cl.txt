@@ -1,5 +1,5 @@
 --data_path gs://mde_data_bucket/kitti
---log_dir /home/jturriatellallire/logs/full_linear_a06_ep6_cl
+--log_dir /home/jturriatellallire/logs/full_linear_a04_ep6_cl
 --model_name res_088
 --dataset kitti 
 --eval_split eigen
