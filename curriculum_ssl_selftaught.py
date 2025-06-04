@@ -46,9 +46,22 @@ class CurriculumLearnerSelfSupervised:
         
         
         if model=='SPIdepth' and not os.path.exists("/home/jturriatellallire/scores_self.npy"):
-            self.models["encoder"] = networks.Unet(pretrained=False, backbone=self.opt.backbone, in_channels=3, num_classes=self.opt.model_dim, decoder_channels=self.opt.dec_channels)
-            self.models["depth"] = networks.Depth_Decoder_QueryTr(in_channels=self.opt.model_dim, patch_size=self.opt.patch_size, dim_out=self.opt.dim_out, embedding_dim=self.opt.model_dim, 
-                                                                    query_nums=self.opt.query_nums, num_heads=4, min_val=self.opt.min_depth, max_val=self.opt.max_depth)
+            if self.opt.backbone in ["resnet", "resnet_lite"]:
+                self.models["encoder"] = networks.ResnetEncoderDecoder(num_layers=self.opt.num_layers, num_features=self.opt.num_features, model_dim=self.opt.model_dim)
+            elif self.opt.backbone == "resnet18_lite":
+                self.models["encoder"] = networks.LiteResnetEncoderDecoder(model_dim=self.opt.model_dim)
+            elif self.opt.backbone == "eff_b5":
+                self.models["encoder"] = networks.BaseEncoder.build(num_features=self.opt.num_features, model_dim=self.opt.model_dim)
+            else: 
+                self.models["encoder"] = networks.Unet(pretrained=False, backbone=self.opt.backbone, in_channels=3, num_classes=self.opt.model_dim, decoder_channels=self.opt.dec_channels)
+
+            if self.opt.backbone.endswith("_lite"):
+                self.models["depth"] = networks.Lite_Depth_Decoder_QueryTr(in_channels=self.opt.model_dim, patch_size=self.opt.patch_size, dim_out=self.opt.dim_out, embedding_dim=self.opt.model_dim, 
+                                                                        query_nums=self.opt.query_nums, num_heads=4, min_val=self.opt.min_depth, max_val=self.opt.max_depth)
+            else:
+                self.models["depth"] = networks.Depth_Decoder_QueryTr(in_channels=self.opt.model_dim, patch_size=self.opt.patch_size, dim_out=self.opt.dim_out, embedding_dim=self.opt.model_dim, 
+                                                                        query_nums=self.opt.query_nums, num_heads=4, min_val=self.opt.min_depth, max_val=self.opt.max_depth)
+
             self.models["pose"] = networks.PoseCNN(self.num_input_frames if self.opt.pose_model_input == "all" else 2)
 
             if not os.path.exists(model_path):
