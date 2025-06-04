@@ -207,8 +207,8 @@ class TrainerCL:
 
         del train_loader_cl
 
-        if not os.path.exists("/home/jturriatellallire/scores_transfer.npy"): # /home/jturriatellallire/scores_self.npy
-            self.curriculum_learner.score_and_save_losses("/home/jturriatellallire/scores_transfer.npy")
+        if not os.path.exists("/home/jturriatellallire/scores_self.npy"): # /home/jturriatellallire/scores_transfer.npy
+            self.curriculum_learner.score_and_save_losses("/home/jturriatellallire/scores_self.npy")
 
 
         self.writers = {}
@@ -279,8 +279,8 @@ class TrainerCL:
             step=self.step,
             total_steps=self.num_total_steps,
             batch_size=self.opt.batch_size,
-            score_path="/home/jturriatellallire/scores_transfer.npy"
-            #score_path="/home/jturriatellallire/scores_self.npy"
+            #score_path="/home/jturriatellallire/scores_transfer.npy"
+            score_path="/home/jturriatellallire/scores_self.npy"
         )
 
         selected_size = self.curriculum_learner.pacing(self.step, self.num_total_steps, len(self.train_loader.dataset))
