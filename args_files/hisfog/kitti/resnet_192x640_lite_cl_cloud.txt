@@ -21,7 +21,7 @@
 --pose_net_path /mnt/bn/videoarc-depthestimation-disk1/wangyouhong/exps/tmp/stereo_lite_320x1024/mdp/models/weights_13/
 --diff_lr
 --use_stereo
---load_weights_folder /content/drive/MyDrive/SPIdepth_Training/logs/resnetlite/linear_ep6_a06/
+--load_weights_folder /content/drive/MyDrive/SPIdepth_Training/logs/resnetlite/linear_ep6_a04/
 --eval_mono
 --post_process
 --num_workers 0
