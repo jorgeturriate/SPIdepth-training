@@ -16,6 +16,8 @@ class SQLdepth(nn.Module):
             self.encoder = networks.ResnetEncoderDecoder(num_layers=self.opt.num_layers, num_features=self.opt.num_features, model_dim=self.opt.model_dim)
         elif opt.model_type in ["nyu_pth_model", "eff_b5"]:
             self.encoder = BaseEncoder.build(num_features=opt.num_features, model_dim=opt.model_dim)
+        elif self.opt.backbone == "resnet18_lite":
+            self.models["encoder"] = networks.LiteResnetEncoderDecoder(model_dim=self.opt.model_dim)
         else:
             self.encoder = networks.Unet(pretrained=(not opt.load_pretrained_model), backbone=opt.backbone, in_channels=3, num_classes=opt.model_dim, decoder_channels=opt.dec_channels)
 
