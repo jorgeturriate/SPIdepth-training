@@ -4,7 +4,6 @@
 --patch_size 16
 --dim_out 64
 --query_nums 64
---dec_channels 1024 512 256 128
 --min_depth 0.001
 --max_depth 80.0
 --load_pretrained_model
