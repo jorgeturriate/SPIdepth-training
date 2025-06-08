@@ -28,18 +28,23 @@ class SQLdepth(nn.Module):
 
         if self.opt.load_pretrained_model:
             self.load_pretrained_model()
+    
+    def remove_module_prefix(self, state_dict):
+        return {k.replace("module.", ""): v for k, v in state_dict.items()}
 
     def load_pretrained_model(self):
         self.device = torch.device("cpu" if self.opt.no_cuda else "cuda")
         print("-> Loading pretrained encoder from ", self.opt.load_pt_folder)
         encoder_path = os.path.join(self.opt.load_pt_folder, "encoder.pth")
         loaded_dict_enc = torch.load(encoder_path, map_location=self.device)
+        loaded_dict_enc = self.remove_module_prefix(loaded_dict_enc)
         filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.encoder.state_dict()}
         self.encoder.load_state_dict(filtered_dict_enc)
 
         print("-> Loading pretrained depth decoder from ", self.opt.load_pt_folder)
         depth_decoder_path = os.path.join(self.opt.load_pt_folder, "depth.pth")
         loaded_dict_enc = torch.load(depth_decoder_path, map_location=self.device)
+        loaded_dict_enc = self.remove_module_prefix(loaded_dict_enc)
         # filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.depth_decoder.state_dict()}
         # self.depth_decoder.load_state_dict(filtered_dict_enc)
         self.depth_decoder.load_state_dict(loaded_dict_enc)
