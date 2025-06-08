@@ -1,0 +1,15 @@
+--model_type cvnxt_L_
+--backbone convnextv2_huge.fcmae_ft_in22k_in1k_384
+--model_dim 32
+--patch_size 32
+--dim_out 64
+--query_nums 64
+--dec_channels 1024 512 256 128
+--min_depth 0.001
+--max_depth 100.0
+--load_pretrained_model
+--load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/resnetlite/vanilla_ep6
+--height 320
+--width 1024
+--image_path /content/drive/MyDrive/SPIdepth_Training/images_reduced
+--ext png
