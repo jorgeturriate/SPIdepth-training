@@ -28,8 +28,8 @@ from collections import OrderedDict
 
 
 
-PROJECT = "SPIdepth_VanillaTraining_lite"
-experiment_name="resnet18lite"
+PROJECT = "SPIdepth_VanillaTraining_full"
+experiment_name="convnextlarge"
 
 class Trainer:
     def __init__(self, options):

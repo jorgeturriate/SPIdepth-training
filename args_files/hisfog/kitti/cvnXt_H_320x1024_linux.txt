@@ -1,0 +1,26 @@
+--data_path gs://mde_datasets_bucket/kitti
+--log_dir /home/jturriatellallire/logs/fullconvnextlarge_ep8
+--model_name cvnXt_075_large
+--dataset kitti
+--eval_split eigen
+--backbone convnext_large_in22ft1k
+--height 320
+--width 1024
+--log_frequency 1000
+--batch_size 16
+--learning_rate 4e-5
+--num_epochs 8
+--scheduler_step_size 10
+--model_dim 32
+--patch_size 32
+--dim_out 64
+--query_nums 64
+--dec_channels 1024 512 256 128
+--min_depth 0.001
+--max_depth 80.0
+--use_stereo
+--load_weights_folder exps/convnext_v11_xxlarge/cvnXt_075/models/weights_12
+--pose_net_path exps/convnext_v11_xxlarge/cvnXt_075/models/weights_13/
+--eval_mono
+--post_process
+--num_workers 0
