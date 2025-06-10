@@ -1,4 +1,4 @@
---data_path gs://mde_datasets_bucket/kitti
+--data_path gs://mde_data_bucket/kitti
 --log_dir /home/jturriatellallire/logs/fullconvnextlarge_ep8
 --model_name cvnXt_075_large
 --dataset kitti
