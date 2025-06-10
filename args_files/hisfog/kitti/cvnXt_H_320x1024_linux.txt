@@ -7,7 +7,7 @@
 --height 320
 --width 1024
 --log_frequency 1000
---batch_size 16
+--batch_size 4
 --learning_rate 4e-5
 --num_epochs 8
 --scheduler_step_size 10
