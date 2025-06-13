@@ -1,0 +1,28 @@
+--data_path /home/jturriatellallire/datasets/MidAir
+--log_dir /home/jturriatellallire/logsMidair/resnet_midair_ep5
+--model_name res_midair
+--dataset midair 
+--eval_split eigen
+--split midair
+--backbone resnet18_lite
+--height 384
+--width 384
+--batch_size 16
+--log_frequency 20
+--num_epochs 5
+--scheduler_step_size 15
+--num_layers 18
+--num_features 256
+--model_dim 32
+--patch_size 16
+--dim_out 64
+--query_nums 64
+--min_depth 0.001
+--max_depth 80.0
+--pose_net_path /mnt/bn/videoarc-depthestimation-disk1/wangyouhong/exps/tmp/stereo_lite_320x1024/mdp/models/weights_13/
+--diff_lr
+--load_weights_folder /home/jturriatellallire/logs/Pretrained_models/kitti/
+--eval_mono
+--post_process
+--num_workers 0
+
