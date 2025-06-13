@@ -1,9 +1,9 @@
---data_path gs://mde_datasets_bucket/kitti
+--data_path gs://mde_data_bucket/kitti
 --log_dir /content/logs/convnext_v13_xxlarge
 --model_name cvnXt_075
 --dataset kitti
---eval_split eigen_benchmark
---backbone convnextv2_huge.fcmae_ft_in22k_in1k_384
+--eval_split eigen
+--backbone convnext_large_in22ft1k
 --height 320
 --width 1024
 --log_frequency 1000
@@ -19,7 +19,7 @@
 --min_depth 0.001
 --max_depth 80.0
 --use_stereo
---load_weights_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/
+--load_weights_folder /content/drive/MyDrive/SPIdepth_Training/logs/fulltraining_ep1
 --pose_net_path /content/logs/convnext_v13_xxlarge
 --eval_mono
 --post_process
