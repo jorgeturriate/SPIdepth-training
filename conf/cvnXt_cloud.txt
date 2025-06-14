@@ -1,15 +1,15 @@
 --model_type cvnxt_L_
---backbone convnextv2_huge.fcmae_ft_in22k_in1k_384
+--backbone convnext_large_in22ft1k
 --model_dim 32
 --patch_size 32
 --dim_out 64
 --query_nums 64
 --dec_channels 1024 512 256 128
 --min_depth 0.001
---max_depth 100.0
+--max_depth 80.0
 --load_pretrained_model
---load_pt_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/
+--load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/fulltraining_ep1
 --height 320
 --width 1024
---image_path /content/drive/MyDrive/SPIdepth_Training/images
+--image_path /content/drive/MyDrive/SPIdepth_Training/images_full1p
 --ext png
