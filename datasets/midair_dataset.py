@@ -43,6 +43,18 @@ class MidAirDataset(MonoDataset):
             color = color.transpose(pil.FLIP_LEFT_RIGHT)
 
         return color
+    
+    def check_depth(self):
+        line = self.filenames[0].split()
+        depth_name = line[1]
+        frame_index = int(line[2])
+
+        depth_filename = os.path.join(
+            self.data_path,
+            depth_name,
+            f"{frame_index:06d}.PNG")
+
+        return os.path.isfile(depth_filename)
 
 
     def get_depth(self, folder, frame_index, side, do_flip):
