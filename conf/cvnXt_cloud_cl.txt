@@ -7,8 +7,8 @@
 --min_depth 0.001
 --max_depth 80.0
 --load_pretrained_model
---load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/resnetlite/quadratic_ep6_a08
+--load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/resnetlite/linear_ep3_a08
 --height 192
 --width 640
---image_path /content/drive/MyDrive/SPIdepth_Training/images_quadratica08_ep6
+--image_path /content/drive/MyDrive/SPIdepth_Training/images_lineara08_ep3
 --ext png
