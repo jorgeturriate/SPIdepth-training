@@ -19,7 +19,7 @@ if __name__ == "__main__":
         opts = options.parser.parse_args([arg_filename_with_prefix])
     else:
         opts = options.parser.parse_args()
-    opts.model_path= "/home/jturriatellallire/logs/full_resnetlite_ep6/res_088/models/weights_2/"
+    opts.model_path= "/home/jturriatellallire/logsMidair/resnet_midair_ep5/res_midair/models/weights_3/"
     #opts.model_path= "/home/jturriatellallire/Pretrained_models/kitti/"
     trainer = TrainerCL(opts)
     trainer.train()

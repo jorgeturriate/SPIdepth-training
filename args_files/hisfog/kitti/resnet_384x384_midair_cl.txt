@@ -1,0 +1,30 @@
+--data_path gs://mde_data_bucket/kitti
+--log_dir /home/jturriatellallire/logs/full_self_linear_a06_ep6_cl
+--model_name res_088
+--dataset kitti 
+--eval_split eigen
+--backbone resnet18_lite
+--height 192 
+--width 640
+--batch_size 16
+--log_frequency 20
+--num_epochs 6
+--scheduler_step_size 15
+--num_layers 18
+--num_features 256
+--model_dim 32
+--patch_size 16
+--dim_out 64
+--query_nums 64
+--min_depth 0.001
+--max_depth 80.0
+--pose_net_path /mnt/bn/videoarc-depthestimation-disk1/wangyouhong/exps/tmp/stereo_lite_320x1024/mdp/models/weights_13/
+--diff_lr
+--use_stereo
+--load_weights_folder /home/jturriatellallire/logs/Pretrained_models/kitti/
+--eval_mono
+--post_process
+--num_workers 0
+--a 0.6
+--p 1
+--pacing linear

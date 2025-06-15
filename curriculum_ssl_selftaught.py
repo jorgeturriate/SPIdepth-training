@@ -45,7 +45,7 @@ class CurriculumLearnerSelfSupervised:
             self.ssim.to(self.device)
         
         
-        if model=='SPIdepth' and not os.path.exists("/home/jturriatellallire/scores_self.npy"):
+        if model=='SPIdepth' and not os.path.exists("/home/jturriatellallire/scores_mid_self.npy"):
             if self.opt.backbone in ["resnet", "resnet_lite"]:
                 self.models["encoder"] = networks.ResnetEncoderDecoder(num_layers=self.opt.num_layers, num_features=self.opt.num_features, model_dim=self.opt.model_dim)
             elif self.opt.backbone == "resnet18_lite":
@@ -447,17 +447,21 @@ class CurriculumLearnerSelfSupervised:
         so is only used to give an indication of validation performance
         """
         depth_pred = outputs[("depth", 0, 0)]
+        _, _, h_gt, w_gt = inputs["depth_gt"].shape #Added
         depth_pred = torch.clamp(F.interpolate(
-            depth_pred, [375, 1242], mode="bilinear", align_corners=False), 1e-3, 80)
+            depth_pred, [h_gt, w_gt], mode="bilinear", align_corners=False), 1e-3, 80)
+        #depth_pred = torch.clamp(F.interpolate(
+        #    depth_pred, [375, 1242], mode="bilinear", align_corners=False), 1e-3, 80)
         depth_pred = depth_pred.detach()
 
         depth_gt = inputs["depth_gt"]
         mask = depth_gt > 0
 
         # garg/eigen crop
-        crop_mask = torch.zeros_like(mask)
-        crop_mask[:, :, 153:371, 44:1197] = 1
-        mask = mask * crop_mask
+        if self.opt.dataset=="kitti":
+            crop_mask = torch.zeros_like(mask)
+            crop_mask[:, :, 153:371, 44:1197] = 1
+            mask = mask * crop_mask
 
         depth_gt = depth_gt[mask]
         depth_pred = depth_pred[mask]

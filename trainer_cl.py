@@ -30,8 +30,8 @@ from collections import OrderedDict
 
 
 
-PROJECT = "SPIdepth_Curriculum_Lite"
-experiment_name="linear"
+PROJECT = "SPIdepth_MidAir_CL_Lite"
+experiment_name="resnet18lite"
 
 class TrainerCL:
     def __init__(self, options):
@@ -152,7 +152,8 @@ class TrainerCL:
         # data
         datasets_dict = {"kitti": datasets.KITTIRAWDataset,
                          "kitti_odom": datasets.KITTIOdomDataset,
-                         "cityscapes_preprocessed": datasets.CityscapesPreprocessedDataset}
+                         "cityscapes_preprocessed": datasets.CityscapesPreprocessedDataset,
+                         "midair": datasets.MidAirDataset}
         self.dataset = datasets_dict[self.opt.dataset] # default="kitti"
 
         fpath = os.path.join(os.path.dirname(__file__), "splits", self.opt.split, "{}_files.txt")
@@ -207,8 +208,8 @@ class TrainerCL:
 
         del train_loader_cl
 
-        if not os.path.exists("/home/jturriatellallire/scores_self.npy"): # /home/jturriatellallire/scores_transfer.npy
-            self.curriculum_learner.score_and_save_losses("/home/jturriatellallire/scores_self.npy")
+        if not os.path.exists("/home/jturriatellallire/scores_mid_self.npy"): # /home/jturriatellallire/scores_transfer.npy
+            self.curriculum_learner.score_and_save_losses("/home/jturriatellallire/scores_mid_self.npy")
 
 
         self.writers = {}
@@ -280,7 +281,7 @@ class TrainerCL:
             total_steps=self.num_total_steps,
             batch_size=self.opt.batch_size,
             #score_path="/home/jturriatellallire/scores_transfer.npy"
-            score_path="/home/jturriatellallire/scores_self.npy"
+            score_path="/home/jturriatellallire/scores_mid_self.npy"
         )
 
         selected_size = self.curriculum_learner.pacing(self.step, self.num_total_steps, len(self.train_loader.dataset))
@@ -673,17 +674,22 @@ class TrainerCL:
         so is only used to give an indication of validation performance
         """
         depth_pred = outputs[("depth", 0, 0)]
+        _, _, h_gt, w_gt = inputs["depth_gt"].shape #Added
         depth_pred = torch.clamp(F.interpolate(
-            depth_pred, [375, 1242], mode="bilinear", align_corners=False), 1e-3, 80)
+            depth_pred, [h_gt, w_gt], mode="bilinear", align_corners=False), 1e-3, 80)
+
+        #depth_pred = torch.clamp(F.interpolate(
+        #    depth_pred, [375, 1242], mode="bilinear", align_corners=False), 1e-3, 80)
         depth_pred = depth_pred.detach()
 
         depth_gt = inputs["depth_gt"]
         mask = depth_gt > 0
 
         # garg/eigen crop
-        crop_mask = torch.zeros_like(mask)
-        crop_mask[:, :, 153:371, 44:1197] = 1
-        mask = mask * crop_mask
+        if self.opt.dataset=="kitti":
+            crop_mask = torch.zeros_like(mask)
+            crop_mask[:, :, 153:371, 44:1197] = 1
+            mask = mask * crop_mask
 
         depth_gt = depth_gt[mask]
         depth_pred = depth_pred[mask]
