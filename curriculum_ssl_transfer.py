@@ -10,7 +10,7 @@ import networks
 from layers import *
 
 class CurriculumLearnerSelfSupervised:
-    def __init__(self, opt, model, dataloader,model_path ,pacing_function="linear", device="cuda"):
+    def __init__(self, opt, model, dataloader, dataset, model_path ,pacing_function="linear", device="cuda"):
         """
         model: SPIdepth model (without loading weights)
         dataloader: full training dataloader
@@ -20,6 +20,7 @@ class CurriculumLearnerSelfSupervised:
         """
         self.models = {} if model=='SPIdepth' else ''
         self.dataloader = dataloader
+        self.dataset= dataset
         self.device = device
         self.pacing_function = pacing_function
         self.sample_scores = []
@@ -46,7 +47,7 @@ class CurriculumLearnerSelfSupervised:
             self.ssim.to(self.device)
         
         
-        if model=='SPIdepth' and not os.path.exists("/home/jturriatellallire/scores_transfer.npy"):
+        if model=='SPIdepth' and not os.path.exists("/home/jturriatellallire/scores_mid_transfer.npy"):
             self.models["encoder"] = networks.Unet(pretrained=False, backbone="convnextv2_huge.fcmae_ft_in22k_in1k_384", in_channels=3, num_classes=32, decoder_channels=(1024,512,256,128))
             self.models["depth"] = networks.Depth_Decoder_QueryTr(in_channels=32, patch_size=32, dim_out=64, embedding_dim=32, 
                                                                     query_nums=64, num_heads=4, min_val=0.001, max_val=80.0)
@@ -138,9 +139,12 @@ class CurriculumLearnerSelfSupervised:
         Only needs to be run once before curriculum training begins.
         """
         sample_losses = []
+        new_dataloader= torch.utils.data.DataLoader(
+            self.dataset, batch_size=1, shuffle=False, num_workers=self.opt.num_workers, pin_memory=True, drop_last=False
+        )
 
         with torch.no_grad():
-            for inputs in self.dataloader:
+            for inputs in new_dataloader:
                 for key in inputs:
                     inputs[key] = inputs[key].to(self.device)
                 outputs, losses = self.process_batch(inputs)

@@ -18,8 +18,8 @@ import json
 from utils import *
 from kitti_utils import *
 from layers import *
-from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
-#from curriculum_ssl_transfer import CurriculumLearnerSelfSupervised
+#from curriculum_ssl_selftaught import CurriculumLearnerSelfSupervised
+from curriculum_ssl_transfer import CurriculumLearnerSelfSupervised
 
 import datasets
 import networks
@@ -173,9 +173,10 @@ class TrainerCL:
             self.opt.data_path, train_filenames, self.opt.height, self.opt.width,
             self.opt.frame_ids, 1, is_train=True, img_ext=img_ext, crop_box=self.opt.crop_box)
         
-        self.train_loader = DataLoader(
-            train_dataset, self.opt.batch_size, True,
-            num_workers=self.opt.num_workers, pin_memory=True, drop_last=True)
+        train_dataset_cl = self.dataset(
+            self.opt.data_path, train_filenames, self.opt.height, self.opt.width,
+            self.opt.frame_ids, 1, is_train=False, img_ext=img_ext, crop_box=self.opt.crop_box)
+      
         
         train_loader_cl= DataLoader(
             train_dataset, 1, shuffle=False,
@@ -201,6 +202,7 @@ class TrainerCL:
             opt=self.opt,
             model="SPIdepth",
             dataloader=train_loader_cl,
+            dataset=train_dataset_cl,
             model_path=self.opt.model_path,  # adjust to your config
             pacing_function=self.opt.pacing,  # default is linear "quadratic" if you add support
             device=self.device
@@ -284,7 +286,7 @@ class TrainerCL:
             score_path="/home/jturriatellallire/scores_mid_self.npy"
         )
 
-        selected_size = self.curriculum_learner.pacing(self.step, self.num_total_steps, len(self.train_loader.dataset))
+        selected_size = self.curriculum_learner.pacing(self.step, self.num_total_steps, len(self.train_loader_cl.dataset))
         wandb.log({"Curriculum/num_samples": selected_size}, step=self.step)
 
         for batch_idx, inputs in enumerate(curriculum_loader):
