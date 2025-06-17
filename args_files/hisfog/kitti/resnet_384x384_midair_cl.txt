@@ -1,5 +1,5 @@
 --data_path /home/jturriatellallire/datasets/MidAir
---log_dir /home/jturriatellallire/logs/full_transfer_mid_linear_a08_ep8_cl
+--log_dir /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep8_cl
 --model_name res_midair
 --dataset midair 
 --eval_split eigen
