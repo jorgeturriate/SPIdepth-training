@@ -178,7 +178,7 @@ class TrainerCL:
             self.opt.frame_ids, 1, is_train=False, img_ext=img_ext, crop_box=self.opt.crop_box)
       
         
-        train_loader_cl= DataLoader(
+        self.train_loader_cl= DataLoader(
             train_dataset, 1, shuffle=False,
             num_workers=self.opt.num_workers, pin_memory=True, drop_last=False)
 
@@ -201,17 +201,17 @@ class TrainerCL:
         self.curriculum_learner = CurriculumLearnerSelfSupervised(
             opt=self.opt,
             model="SPIdepth",
-            dataloader=train_loader_cl,
+            dataloader=self.train_loader_cl,
             dataset=train_dataset_cl,
             model_path=self.opt.model_path,  # adjust to your config
             pacing_function=self.opt.pacing,  # default is linear "quadratic" if you add support
             device=self.device
         )
 
-        del train_loader_cl
+        del train_dataset_cl
 
-        if not os.path.exists("/home/jturriatellallire/scores_mid_self.npy"): # /home/jturriatellallire/scores_transfer.npy
-            self.curriculum_learner.score_and_save_losses("/home/jturriatellallire/scores_mid_self.npy")
+        if not os.path.exists("/home/jturriatellallire/scores_mid_transfer.npy"): # /home/jturriatellallire/scores_mid_self.npy
+            self.curriculum_learner.score_and_save_losses("/home/jturriatellallire/scores_mid_transfer.npy")
 
 
         self.writers = {}
@@ -282,8 +282,8 @@ class TrainerCL:
             step=self.step,
             total_steps=self.num_total_steps,
             batch_size=self.opt.batch_size,
-            #score_path="/home/jturriatellallire/scores_transfer.npy"
-            score_path="/home/jturriatellallire/scores_mid_self.npy"
+            score_path="/home/jturriatellallire/scores_mid_transfer.npy"
+            #score_path="/home/jturriatellallire/scores_mid_self.npy"
         )
 
         selected_size = self.curriculum_learner.pacing(self.step, self.num_total_steps, len(self.train_loader_cl.dataset))
