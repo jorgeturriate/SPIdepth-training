@@ -722,8 +722,9 @@ class TrainerCL:
         writer = self.writers[mode]
         for l, v in losses.items():
             writer.add_scalar("{}".format(l), v, self.step)
-
-        for j in range(min(4, self.opt.batch_size)):  # write a maxmimum of four images
+        
+        batch_size= inputs[("color", 0, 0)].shape[0]
+        for j in range(min(4, batch_size)):  # write a maxmimum of four images, originally self.opt.batch_size
             for s in self.opt.scales:
                 for frame_id in self.opt.frame_ids:
                     writer.add_image(
