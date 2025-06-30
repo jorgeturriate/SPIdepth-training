@@ -12,4 +12,4 @@
 --height 384
 --width 384
 --image_path /content/drive/MyDrive/SPIdepth_Training/images_midair
---ext png
+--ext jpeg
