@@ -1,0 +1,14 @@
+--model_type cvnxt_L_
+--backbone resnet18_lite
+--model_dim 32
+--patch_size 16
+--dim_out 64
+--query_nums 64
+--min_depth 0.001
+--max_depth 80.0
+--load_pretrained_model
+--load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/full_transfer_mid_linear_a08_ep8_cl
+--height 384
+--width 384
+--image_path /content/drive/MyDrive/SPIdepth_Training/images_midair_cl
+--ext png
