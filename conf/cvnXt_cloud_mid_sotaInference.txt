@@ -9,7 +9,7 @@
 --max_depth 80.0
 --load_pretrained_model
 --load_pt_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti
---height 384
---width 384
+--height 320
+--width 1024
 --image_path /content/drive/MyDrive/SPIdepth_Training/images_midair_sotainference
 --ext jpeg
