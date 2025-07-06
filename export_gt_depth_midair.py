@@ -11,9 +11,10 @@ import os
 import argparse
 import numpy as np
 import PIL.Image as pil
+import skimage.transform
 
 from utils import readlines
-from kitti_utils import generate_depth_map
+
 
 
 def export_gt_depths_kitti():
@@ -49,6 +50,10 @@ def export_gt_depths_kitti():
         disparity= gt_depth.view(dtype=np.float16).astype(np.float32)
         disparity[disparity == 0] = 0.01  # avoid division by 0
         gt_depth = 512. / disparity
+
+        # Resize to 384x384 BEFORE appending
+        gt_depth = skimage.transform.resize(gt_depth, (384, 384), order=0, preserve_range=True, mode='constant')
+
 
         gt_depths.append(gt_depth.astype(np.float32))
 
