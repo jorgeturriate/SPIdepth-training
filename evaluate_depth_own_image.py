@@ -105,7 +105,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate predicted depth against ground truth")
     parser.add_argument("--pred_path", type=str, required=True, help="Path to predicted depth maps")
     parser.add_argument("--gt_path", type=str, required=True, help="Path to ground truth depth maps")
-    parser.add_argument("--format", type=str, default="uint16", choices=["uint16", "colormap"],
+    parser.add_argument("--format", type=str, default="uint16", choices=["uint16", "colormap","disp"],
                         help="Format of input images if PNG: 'uint16' for raw depth, 'colormap' for visualization only")
     parser.add_argument("--vis_every", type=int, default=20, help="Visualize every N images")
     parser.add_argument("--save_vis", default=False , action="store_true", help="Save comparison plots")
