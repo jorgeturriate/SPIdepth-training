@@ -2,7 +2,7 @@
 --log_dir /home/jturriatellallire/logsMidair/resnet_midair_ep9
 --model_name res_midair
 --dataset midair 
---eval_split midair
+--eval_split cityscapes
 --split midair
 --backbone resnet18_lite
 --height 384
