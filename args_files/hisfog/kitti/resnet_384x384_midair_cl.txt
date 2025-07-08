@@ -2,7 +2,7 @@
 --log_dir /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep9_cl
 --model_name res_midair
 --dataset midair 
---eval_split eigen
+--eval_split cityscapes
 --split midair
 --backbone resnet18_lite
 --height 384 
@@ -21,7 +21,7 @@
 --max_depth 80.0
 --pose_net_path /mnt/bn/videoarc-depthestimation-disk1/wangyouhong/exps/tmp/stereo_lite_320x1024/mdp/models/weights_13/
 --diff_lr
---load_weights_folder /home/jturriatellallire/logs/Pretrained_models/kitti/
+--load_weights_folder /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep9_cl/res_midair/models/weights_3997/
 --eval_mono
 --post_process
 --num_workers 0
