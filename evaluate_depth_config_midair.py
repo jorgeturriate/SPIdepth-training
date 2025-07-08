@@ -250,10 +250,17 @@ def evaluate(opt):
         else:
             mask = gt_depth > 0
 
-        error_map = np.abs(gt_depth - pred_depth)
+
         pred_depth = pred_depth[mask]
         gt_depth = gt_depth[mask]
-        error_map = np.multiply(error_map, mask)
+
+        if len(gt_depth) < 2:  # skip if too few valid points
+            continue
+
+        gt_depth = np.atleast_1d(gt_depth)
+        pred_depth = np.atleast_1d(pred_depth)
+
+        error_map = np.abs(gt_depth - pred_depth)
         error_maps.append(error_map)
 
         pred_depth *= opt.pred_depth_scale_factor
@@ -262,11 +269,9 @@ def evaluate(opt):
             ratios.append(ratio)
             pred_depth *= ratio
 
-        pred_depth[pred_depth < MIN_DEPTH] = MIN_DEPTH
-        pred_depth[pred_depth > MAX_DEPTH] = MAX_DEPTH
+        pred_depth = np.clip(pred_depth, MIN_DEPTH, MAX_DEPTH)
+        gt_depth = np.clip(gt_depth, MIN_DEPTH, MAX_DEPTH)
 
-        gt_depth = np.atleast_1d(gt_depth)
-        pred_depth = np.atleast_1d(pred_depth)
         errors.append(compute_errors(gt_depth, pred_depth))
 
     if not opt.disable_median_scaling:
