@@ -65,6 +65,11 @@ def main(pred_path, gt_path, image_format="uint16", vis_every=20, save_vis=False
             #if the predictions disparities were stored after multiplied by 256
             #pred /= 256.0 
             pred /= 1000.0  # if saved like SPIdepth predictions (disp * 1000)
+        elif image_format == 'disp':
+            gt= 512. / gt
+            #if the predictions disparities were stored after multiplied by 256
+            #pred /= 256.0 
+            pred /= 1000.0  # if saved like SPIdepth predictions (disp * 1000)
 
         # Resize prediction if shape mismatch
         if gt.shape != pred.shape:
