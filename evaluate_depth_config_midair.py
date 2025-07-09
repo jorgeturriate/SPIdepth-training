@@ -257,8 +257,8 @@ def evaluate(opt):
         if len(gt_depth) < 2:  # skip if too few valid points
             continue
 
-        gt_depth = np.atleast_1d(gt_depth)
-        pred_depth = np.atleast_1d(pred_depth)
+        gt_depth = np.array(gt_depth, dtype=np.float32)
+        pred_depth = np.array(pred_depth, dtype=np.float32)
 
         error_map = np.abs(gt_depth - pred_depth)
         error_maps.append(error_map)
