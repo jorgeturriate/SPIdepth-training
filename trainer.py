@@ -71,6 +71,7 @@ class Trainer:
             print("-> Loading pretrained encoder from ", self.opt.load_pt_folder)
             encoder_path = os.path.join(self.opt.load_pt_folder, "encoder.pth")
             loaded_dict_enc = torch.load(encoder_path, map_location=self.device)
+            loaded_dict_enc = {k.replace("module.", ""): v for k, v in loaded_dict_enc.items()}
             filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.models["encoder"].state_dict()}
             self.models["encoder"].load_state_dict(filtered_dict_enc)
 
@@ -92,6 +93,7 @@ class Trainer:
             print("-> Loading pretrained depth decoder from ", self.opt.load_pt_folder)
             depth_decoder_path = os.path.join(self.opt.load_pt_folder, "depth.pth")
             loaded_dict_enc = torch.load(depth_decoder_path, map_location=self.device)
+            loaded_dict_enc = {k.replace("module.", ""): v for k, v in loaded_dict_enc.items()}
             filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.models["depth"].state_dict()}
             self.models["depth"].load_state_dict(filtered_dict_enc)
 
@@ -112,6 +114,7 @@ class Trainer:
             print("-> Loading pretrained depth decoder from ", self.opt.pose_net_path)
             depth_decoder_path = os.path.join(self.opt.pose_net_path, "depth.pth")
             loaded_dict_enc = torch.load(depth_decoder_path, map_location=self.device)
+            loaded_dict_enc = {k.replace("module.", ""): v for k, v in loaded_dict_enc.items()}
             filtered_dict_enc = {k: v for k, v in loaded_dict_enc.items() if k in self.models["depth"].state_dict()}
             self.models["depth"].load_state_dict(filtered_dict_enc)
         
@@ -773,6 +776,7 @@ class Trainer:
             path = os.path.join(self.opt.load_weights_folder, "{}.pth".format(n))
             model_dict = self.models[n].state_dict()
             pretrained_dict = torch.load(path)
+            pretrained_dict = {k.replace("module.", ""): v for k, v in pretrained_dict.items()}
             pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
             model_dict.update(pretrained_dict)
             self.models[n].load_state_dict(model_dict)
