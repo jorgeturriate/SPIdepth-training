@@ -19,9 +19,12 @@
 --query_nums 64
 --min_depth 0.001
 --max_depth 80.0
+--load_pretrained_model
+--pretrained_pose
 --pose_net_path /home/jturriatellallire/logsMidair/resnet_midair_ep9/res_midair/models/weights_8/
 --diff_lr
 --load_weights_folder /home/jturriatellallire/logsMidair/resnet_midair_ep9/res_midair/models/weights_8/
+--load_pt_folder /home/jturriatellallire/logsMidair/resnet_midair_ep9/res_midair/models/weights_8/
 --eval_mono
 --post_process
 --num_workers 0
