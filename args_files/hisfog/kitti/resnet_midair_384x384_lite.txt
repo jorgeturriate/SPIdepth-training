@@ -1,5 +1,5 @@
 --data_path /home/jturriatellallire/datasets/MidAir
---log_dir /home/jturriatellallire/logsMidair/resnet_midair_ep18
+--log_dir /home/jturriatellallire/logsMidair/resnet_midair_ep27
 --model_name res_midair
 --dataset midair 
 --eval_split cityscapes
@@ -21,7 +21,7 @@
 --max_depth 80.0
 --load_pretrained_model
 --pretrained_pose
---pose_net_path /home/jturriatellallire/logsMidair/resnet_midair_ep18/res_midair/models/weights_8/
+--pose_net_path /home/jturriatellallire/logsMidair/resnet_midair_ep18/res_midair_ep18/models/weights_8/
 --diff_lr
 --load_weights_folder /home/jturriatellallire/logsMidair/resnet_midair_ep18/res_midair/models/weights_8/
 --load_pt_folder /home/jturriatellallire/logsMidair/resnet_midair_ep18/res_midair/models/weights_8/
