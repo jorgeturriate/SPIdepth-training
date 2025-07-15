@@ -8,8 +8,8 @@
 --min_depth 0.001
 --max_depth 80.0
 --load_pretrained_model
---load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/full_resnet_midair_ep27
+--load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/full_resnet_midair_ep27_tog
 --height 384
 --width 384
---image_path /content/drive/MyDrive/SPIdepth_Training/images_midair_ep27
+--image_path /content/drive/MyDrive/SPIdepth_Training/images_midair_ep27_tog
 --ext jpeg
