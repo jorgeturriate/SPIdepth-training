@@ -1,5 +1,5 @@
 --data_path /home/jturriatellallire/datasets/MidAir
---log_dir /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep18_cl
+--log_dir /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep27_cl
 --model_name res_midair
 --dataset midair 
 --eval_split cityscapes
@@ -9,7 +9,7 @@
 --width 384
 --batch_size 16
 --log_frequency 20
---num_epochs 18
+--num_epochs 27
 --scheduler_step_size 15
 --num_layers 18
 --num_features 256
