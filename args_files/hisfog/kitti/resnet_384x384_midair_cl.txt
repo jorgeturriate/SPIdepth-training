@@ -1,5 +1,5 @@
 --data_path /home/jturriatellallire/datasets/MidAir
---log_dir /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep27_cl
+--log_dir /home/jturriatellallire/logsMidair/full_transfer_mid_quadratic_a06_ep27_cl
 --model_name res_midair
 --dataset midair 
 --eval_split cityscapes
@@ -21,10 +21,10 @@
 --max_depth 80.0
 --pose_net_path /mnt/bn/videoarc-depthestimation-disk1/wangyouhong/exps/tmp/stereo_lite_320x1024/mdp/models/weights_13/
 --diff_lr
---load_weights_folder /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep27_cl/res_midair/models/weights_10998/
+--load_weights_folder /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep27_cl/res_midair/models/weights_9599/
 --eval_mono
 --post_process
 --num_workers 0
---a 0.8
---p 1
---pacing linear
+--a 0.6
+--p 2
+--pacing quadratic
