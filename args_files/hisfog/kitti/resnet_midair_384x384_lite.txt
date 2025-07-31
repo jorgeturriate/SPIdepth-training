@@ -19,10 +19,10 @@
 --query_nums 64
 --min_depth 0.001
 --max_depth 80.0
---pose_net_path /home/jturriatellallire/logsMidair/resnet_midair_ep18/res_midair/models/weights_8/
+--pose_net_path /home/jturriatellallire/logsMidair/resnet_midair_ep27_together/res_midair/models/weights_26/
 --diff_lr
---load_weights_folder /home/jturriatellallire/logsMidair/resnet_midair_ep18/res_midair/models/weights_8/
---load_pt_folder /home/jturriatellallire/logsMidair/resnet_midair_ep18/res_midair/models/weights_8/
+--load_weights_folder /home/jturriatellallire/logsMidair/resnet_midair_ep27_together/res_midair/models/weights_26/
+--load_pt_folder /home/jturriatellallire/logsMidair/resnet_midair_ep27_together/res_midair/models/weights_26/
 --eval_mono
 --post_process
 --num_workers 0
