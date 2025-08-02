@@ -21,7 +21,7 @@
 --max_depth 80.0
 --pose_net_path /mnt/bn/videoarc-depthestimation-disk1/wangyouhong/exps/tmp/stereo_lite_320x1024/mdp/models/weights_13/
 --diff_lr
---load_weights_folder /home/jturriatellallire/logsMidair/full_transfer_mid_quadratic_a06_ep27_cl/res_midair/models/weights_11109/
+--load_weights_folder /home/jturriatellallire/logsMidair/full_transfer_mid_quadratic_a06_ep27_cl/res_midair/models/weights_5099/
 --eval_mono
 --post_process
 --num_workers 0
