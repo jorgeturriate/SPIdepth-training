@@ -1,5 +1,5 @@
 --data_path /home/jturriatellallire/datasets/MidAir
---log_dir /home/jturriatellallire/logsMidair/resnet_midair_ep27_together
+--log_dir /home/jturriatellallire/logsMidair/resnet_midair_ep27_cl_plus_traditional
 --model_name res_midair
 --dataset midair 
 --eval_split cityscapes
@@ -19,10 +19,12 @@
 --query_nums 64
 --min_depth 0.001
 --max_depth 80.0
---pose_net_path /home/jturriatellallire/logsMidair/resnet_midair_ep27_together/res_midair/models/weights_26/
+--load_pretrained_model
+--pretrained_pose
+--pose_net_path /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep18_cl/res_midair/models/weights_7481/
 --diff_lr
---load_weights_folder /home/jturriatellallire/logsMidair/resnet_midair_ep27_together/res_midair/models/weights_26/
---load_pt_folder /home/jturriatellallire/logsMidair/resnet_midair_ep27_together/res_midair/models/weights_26/
+--load_weights_folder /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep18_cl/res_midair/models/weights_7481/
+--load_pt_folder /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep18_cl/res_midair/models/weights_7481/
 --eval_mono
 --post_process
 --num_workers 0
