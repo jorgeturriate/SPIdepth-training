@@ -7,8 +7,8 @@
 --min_depth 0.001
 --max_depth 80.0
 --load_pretrained_model
---load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/full_transfer_mid_linear_a08_ep18_cl
+--load_pt_folder /content/drive/MyDrive/SPIdepth_Training/logs/full_transfer_mid_linear_a08_ep27_cl
 --height 384
 --width 384
---image_path /content/drive/MyDrive/SPIdepth_Training/images_midair_cl_ep18
+--image_path /content/drive/MyDrive/SPIdepth_Training/images_midair_cl_ep27
 --ext jpeg
