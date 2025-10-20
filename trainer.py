@@ -286,9 +286,9 @@ class Trainer:
             if should_log and self.step % 10 == 0:
               #wandb.log({f"Train/reprojection_loss": losses["loss"].item()}, step=self.step)
               wandb.log({
-                    "Train/reprojection_loss": losses["loss"].item(),
-                    "Train/smoothness_loss": losses["reproj_loss"].item(),  
-                    "Train/total_loss": losses["smooth_loss"].item()
+                    "Train/total_loss": losses["loss"].item(),
+                    "Train/reprojection_loss": losses["reproj_loss"].item(),  
+                    "Train/smoothness_loss": losses["smooth_loss"].item()
                 }, step=self.step)
 
             # log less frequently after the first 2000 steps to save time & disk space
