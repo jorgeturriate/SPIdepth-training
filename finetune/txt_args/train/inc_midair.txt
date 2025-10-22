@@ -7,7 +7,7 @@
 --wd 0.01
 --div_factor 10
 --final_div_factor 100
---validate_every 3000
+--validate_every 300
 --dataset midair
 --workers 0
 --w_chamfer 0
