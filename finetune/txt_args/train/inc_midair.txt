@@ -13,7 +13,7 @@
 --w_chamfer 0
 --data_path /home/jturriatellallire/datasets/MidAir
 --gt_path /home/jturriatellallire/datasets/MidAir
---filenames_file ./splits/midair/train_files.txt
+--filenames_file /home/jturriatellallire/SPIdepth-training/splits/midair/train_files.txt
 --input_height 384
 --input_width 384
 --min_depth 0.001
@@ -21,7 +21,7 @@
 --degree 1.0
 --data_path_eval /home/jturriatellallire/datasets/MidAir
 --gt_path_eval /home/jturriatellallire/datasets/MidAir
---filenames_file_eval ./splits/midair/val_files.txt
+--filenames_file_eval /home/jturriatellallire/SPIdepth-training/splits/midair/val_files.txt
 --min_depth_eval 1e-3
 --max_depth_eval 80
 --same_lr
