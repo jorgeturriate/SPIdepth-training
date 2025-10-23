@@ -79,7 +79,7 @@ class DataLoadPreprocess(Dataset):
 
     def __getitem__(self, idx):
         sample_path = self.filenames[idx]
-        frame_index= sample_path.split()[2]
+        frame_index= int(sample_path.split()[2])
         focal = self.focal
 
         if self.mode == 'train':
