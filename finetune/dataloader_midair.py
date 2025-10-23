@@ -79,11 +79,12 @@ class DataLoadPreprocess(Dataset):
 
     def __getitem__(self, idx):
         sample_path = self.filenames[idx]
+        frame_index= sample_path.split()[2]
         focal = self.focal
 
         if self.mode == 'train':
-            image_path = os.path.join(self.args.data_path, remove_leading_slash(sample_path.split()[0]), f"{sample_path.split()[2]:06d}.JPEG" )
-            depth_path = os.path.join(self.args.gt_path, remove_leading_slash(sample_path.split()[1]), f"{sample_path.split()[2]:06d}.PNG" )
+            image_path = os.path.join(self.args.data_path, remove_leading_slash(sample_path.split()[0]), f"{frame_index:06d}.JPEG" )
+            depth_path = os.path.join(self.args.gt_path, remove_leading_slash(sample_path.split()[1]), f"{frame_index:06d}.PNG" )
 
             image = Image.open(image_path).convert('RGB')
             depth_gt = Image.open(depth_path)
@@ -114,14 +115,14 @@ class DataLoadPreprocess(Dataset):
             else:
                 data_path = self.args.data_path
 
-            image_path = os.path.join(data_path, remove_leading_slash(sample_path.split()[0]), f"{sample_path.split()[2]:06d}.JPEG")
+            image_path = os.path.join(data_path, remove_leading_slash(sample_path.split()[0]), f"{frame_index:06d}.JPEG")
             image = Image.open(image_path).convert('RGB')
             image = image.resize(self.full_res_shape, Image.Resampling.BILINEAR)
             image = np.asarray(image, dtype=np.float32) / 255.0
 
             if self.mode == 'online_eval':
                 gt_path = self.args.gt_path_eval
-                depth_path = os.path.join(gt_path, remove_leading_slash(sample_path.split()[1]), f"{sample_path.split()[2]:06d}.PNG")
+                depth_path = os.path.join(gt_path, remove_leading_slash(sample_path.split()[1]), f"{frame_index:06d}.PNG")
                 has_valid_depth = False
                 try:
                     depth_gt = Image.open(depth_path)
