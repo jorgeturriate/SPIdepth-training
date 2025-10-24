@@ -243,6 +243,9 @@ def train(model, args, epochs=10, experiment_name="DeepLab", lr=0.0001, root="."
                 pred_np = pred[i].squeeze().detach().cpu().numpy()
                 depth_np = depth[i].squeeze().detach().cpu().numpy()
                 valid_mask = np.logical_and(depth_np > args.min_depth_eval, depth_np < args.max_depth_eval)
+                # Default: no crop (for MidAir)
+                eval_mask = np.ones(valid_mask.shape, dtype=bool)
+
                 if args.garg_crop or args.eigen_crop:
                     gt_height, gt_width = depth_np.shape # for bs = 1
                     eval_mask = np.zeros(valid_mask.shape)
@@ -384,6 +387,9 @@ def validate(args, model, test_loader, criterion_ueff, epoch, epochs, device='cp
 
             gt_depth = depth.squeeze().cpu().numpy()
             valid_mask = np.logical_and(gt_depth > args.min_depth_eval, gt_depth < args.max_depth_eval)
+            # Default: no crop for MidAir
+            eval_mask = np.ones(valid_mask.shape, dtype=bool)
+            
             if args.garg_crop or args.eigen_crop:
                 gt_height, gt_width = gt_depth.shape
                 eval_mask = np.zeros(valid_mask.shape)
