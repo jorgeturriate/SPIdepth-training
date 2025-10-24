@@ -146,8 +146,14 @@ class DataLoadPreprocess(Dataset):
 
             
             if self.mode == 'online_eval':
-                image = image.resize((self.args.input_width, self.args.input_height), Image.Resampling.BILINEAR)
-                depth_gt = skimage.transform.resize(depth_gt, (self.args.input_height, self.args.input_width), order=0, preserve_range=True, mode='constant')
+                image = skimage.transform.resize(
+                    image, (self.args.input_height, self.args.input_width),
+                    order=1, preserve_range=True, mode='constant'
+                )
+                depth_gt = skimage.transform.resize(
+                    depth_gt, (self.args.input_height, self.args.input_width),
+                    order=0, preserve_range=True, mode='constant'
+                )
 
                 sample = {'image': image, 'depth': depth_gt, 'focal': focal, 'has_valid_depth': has_valid_depth,
                           'image_path': sample_path.split()[0], 'depth_path': sample_path.split()[1]}
