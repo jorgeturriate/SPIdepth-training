@@ -312,7 +312,7 @@ def train(model, args, epochs=10, experiment_name="DeepLab", lr=0.0001, root="."
                     os.makedirs(save_folder, exist_ok=True)
 
                     # Handle DataParallel if needed
-                    if args.multigpu and hasattr(model, "module"):
+                    if hasattr(model, "module"):
                         model_to_save = model.module
                     else:
                         model_to_save = model
@@ -339,7 +339,7 @@ def train(model, args, epochs=10, experiment_name="DeepLab", lr=0.0001, root="."
         final_save_folder = os.path.join(log_path, "models", f"weights_{epochs:02d}")
         os.makedirs(final_save_folder, exist_ok=True)
 
-        if args.multigpu and hasattr(model, "module"):
+        if hasattr(model, "module"):
             model_to_save = model.module
         else:
             model_to_save = model
