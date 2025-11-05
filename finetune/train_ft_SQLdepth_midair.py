@@ -320,8 +320,8 @@ def train(model, args, epochs=10, experiment_name="DeepLab", lr=0.0001, root="."
                     # Save encoder weights
                     if hasattr(model_to_save, "encoder"):
                         encoder_state = model_to_save.encoder.state_dict()
-                        encoder_state["height"] = args.height
-                        encoder_state["width"] = args.width
+                        encoder_state["height"] = args.input_height
+                        encoder_state["width"] = args.input_width
                         torch.save(encoder_state, os.path.join(save_folder, "encoder.pth"))
 
                     # Save depth decoder weights
@@ -346,8 +346,8 @@ def train(model, args, epochs=10, experiment_name="DeepLab", lr=0.0001, root="."
 
         if hasattr(model_to_save, "encoder"):
             encoder_state = model_to_save.encoder.state_dict()
-            encoder_state["height"] = args.height
-            encoder_state["width"] = args.width
+            encoder_state["height"] = args.input_height
+            encoder_state["width"] = args.input_width
             torch.save(encoder_state, os.path.join(final_save_folder, "encoder.pth"))
 
         if hasattr(model_to_save, "depth_decoder"):
