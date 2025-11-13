@@ -257,7 +257,7 @@ class ToTensor(object):
             return {'image': image, 'focal': focal}
 
         depth = sample['depth']
-        if self.mode == 'train':
+        if self.mode == 'train' or self.mode == 'curriculum':
             depth = self.to_tensor(depth)
             return {'image': image, 'depth': depth, 'focal': focal}
         else:
