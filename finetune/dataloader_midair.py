@@ -36,6 +36,16 @@ class DepthDataLoader(object):
                                    num_workers=args.num_threads,
                                    pin_memory=True,
                                    sampler=self.train_sampler)
+            
+        elif mode == 'curriculum':
+            self.training_samples = DataLoadPreprocess(args, mode, transform=preprocessing_transforms(mode))
+            self.train_sampler = None
+
+            self.data = DataLoader(self.training_samples, 1,
+                                   shuffle=False,
+                                   num_workers=args.num_threads,
+                                   pin_memory=True,
+                                   sampler=self.train_sampler)
 
         elif mode == 'online_eval':
             self.testing_samples = DataLoadPreprocess(args, mode, transform=preprocessing_transforms(mode))
@@ -82,7 +92,7 @@ class DataLoadPreprocess(Dataset):
         frame_index= int(sample_path.split()[2])
         focal = self.focal
 
-        if self.mode == 'train':
+        if self.mode == 'train' or self.mode == 'curriculum':
             image_path = os.path.join(self.args.data_path, remove_leading_slash(sample_path.split()[0]), f"{frame_index:06d}.JPEG" )
             depth_path = os.path.join(self.args.gt_path, remove_leading_slash(sample_path.split()[1]), f"{frame_index:06d}.PNG" )
 
@@ -230,7 +240,7 @@ class ToTensor(object):
             return {'image': image, 'focal': focal}
 
         depth = sample['depth']
-        if self.mode == 'train':
+        if self.mode == 'train' or self.mode == 'curriculum':
             depth = self.to_tensor(depth)
             return {'image': image, 'depth': depth, 'focal': focal}
         else:
