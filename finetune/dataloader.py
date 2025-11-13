@@ -39,6 +39,16 @@ class DepthDataLoader(object):
                                    num_workers=args.num_threads,
                                    pin_memory=True,
                                    sampler=self.train_sampler)
+            
+        elif mode == 'curriculum':
+            self.training_samples = DataLoadPreprocess(args, mode, transform=preprocessing_transforms(mode))
+            self.train_sampler = None
+
+            self.data = DataLoader(self.training_samples, 1,
+                                   shuffle=False,
+                                   num_workers=args.num_threads,
+                                   pin_memory=True,
+                                   sampler=self.train_sampler)
 
         elif mode == 'online_eval':
             self.testing_samples = DataLoadPreprocess(args, mode, transform=preprocessing_transforms(mode))
@@ -86,7 +96,7 @@ class DataLoadPreprocess(Dataset):
         sample_path = self.filenames[idx]
         focal = float(sample_path.split()[2])
 
-        if self.mode == 'train':
+        if self.mode == 'train' or self.mode == 'curriculum':
             if self.args.dataset == 'kitti' and self.args.use_right is True and random.random() > 0.5:
                 image_path = os.path.join(self.args.data_path, remove_leading_slash(sample_path.split()[3]))
                 depth_path = os.path.join(self.args.gt_path, remove_leading_slash(sample_path.split()[4]))
