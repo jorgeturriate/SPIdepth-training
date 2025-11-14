@@ -182,7 +182,7 @@ class CurriculumLearnerSupervised:
 
         # === 2. Forward pass ===
         features = self.models["encoder"](img_resized)
-        pred_dict = self.models["depth"](features)["disp", 0]
+        pred_depth = self.models["depth"](features)["disp", 0]
 
 
         pred_depth = F.interpolate(pred_depth, size=gt_depth.shape[-2:], mode='bilinear', align_corners=True)
