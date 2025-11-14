@@ -162,7 +162,7 @@ def train(model, args, opt ,epochs=10, experiment_name="DeepLab", lr=0.0001, roo
     ###################################### Logging setup #########################################
     print(f"Training {experiment_name}")
 
-    run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{args.bs}-tep{num_total_steps}-lr{lr}-a{opt.a}--{uuid.uuid4()}"
+    run_id = f"{dt.now().strftime('%d-%h_%H-%M')}-nodebs{args.bs}-tep{num_total_steps}-lr{lr}-a{args.a}--{uuid.uuid4()}"
     name = f"{experiment_name}_{run_id}"
     should_write = not args.distributed
     should_log = should_write and logging
