@@ -182,20 +182,10 @@ class CurriculumLearnerSupervised:
 
         # === 2. Forward pass ===
         features = self.models["encoder"](img_resized)
-        pred_dict = self.models["depth"](features)
+        pred_dict = self.models["depth"](features)["disp", 0]
 
-        # === Extract depth tensor (decoder returns a dict) ===
-        if "depth" in pred_dict:
-            pred_depth = pred_dict["depth"]
-        elif "disp" in pred_dict:
-            pred_depth = 1.0 / (pred_dict["disp"] + 1e-6)
-        else:
-            raise ValueError("Decoder output does not contain 'depth' or 'disp'")
 
-        # === 3. Resize prediction back to GT resolution (384×384) ===
-        if pred_depth.shape[-2:] != gt_depth.shape[-2:]:
-            pred_depth = F.interpolate(pred_depth, size=gt_depth.shape[-2:],
-                                    mode='bilinear', align_corners=True)
+        pred_depth = F.interpolate(pred_depth, size=gt_depth.shape[-2:], mode='bilinear', align_corners=True)
 
         # === 4. Scale recovery exactly like your training loop ===
         pred_np = pred_depth[0].squeeze().detach().cpu().numpy()
