@@ -156,7 +156,7 @@ def train(model, args, opt ,epochs=10, experiment_name="DeepLab", lr=0.0001, roo
     # some globals
     iters = len(train_loader)
     step = 0
-    num_total_steps = epochs * iters
+    num_total_steps = epochs * (iters//args.bs)
     best_loss = np.inf
 
     ###################################### Logging setup #########################################
