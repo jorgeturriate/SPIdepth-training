@@ -164,41 +164,52 @@ class CurriculumLearnerSupervised:
 
     def process_batch_supervised(self, inputs, criterion_ueff):
         """
-        Processes a batch and computes supervised loss between predicted and GT depth maps.
+        Processes a batch using the SAME logic as your supervised fine-tuning,
+        while ensuring the input resolution matches the pretrained SPIdepth model.
         """
-        target_height, target_width = 320, 1024 #same as pretrained model
 
-        # Resize RGB input if necessary
-        color_key = ("color", 0, 0)
-        if color_key not in inputs:
-            raise KeyError(f"Expected key {color_key} in inputs")  
-        
-        img = inputs[color_key]
-        if img.shape[-2:] != (target_height, target_width):
-            img = F.interpolate(img, size=(target_height, target_width), mode='bilinear', align_corners=False)
+        # Raw MidAir tensors: [B,3,384,384]
+        img = inputs["image"].to(self.device)
+        gt_depth = inputs["depth"].to(self.device)
 
-        # Forward pass
-        features = self.models["encoder"](img)
-        outputs = self.models["depth"](features)
-
-        # Handle both possible depth representations
-        if ("disp", 0) in outputs:
-            disp = outputs[("disp", 0)]
-            min_depth, max_depth = self.opt.min_depth, self.opt.max_depth
-            pred_depth = 1 / (min_depth + (max_depth - min_depth) * disp)
-        elif "depth" in outputs:
-            pred_depth = outputs["depth"]
+        # === 1. Resize image to pretrained resolution ===
+        pretrained_h, pretrained_w = 320, 1024
+        if img.shape[-2:] != (pretrained_h, pretrained_w):
+            img_resized = F.interpolate(img, size=(pretrained_h, pretrained_w),
+                                        mode='bilinear', align_corners=False)
         else:
-            # In case the model outputs directly as tensor
-            pred_depth = outputs
+            img_resized = img
 
-        gt_depth = inputs["depth_gt"]
-        # Create valid mask like fine-tuning script
+        # === 2. Forward pass ===
+        features = self.models["encoder"](img_resized)
+        pred_depth = self.models["depth"](features)
+
+        # === 3. Resize prediction back to GT resolution (384×384) ===
+        if pred_depth.shape[-2:] != gt_depth.shape[-2:]:
+            pred_depth = F.interpolate(pred_depth, size=gt_depth.shape[-2:],
+                                    mode='bilinear', align_corners=True)
+
+        # === 4. Scale recovery exactly like your training loop ===
+        pred_np = pred_depth[0].squeeze().detach().cpu().numpy()
+        depth_np = gt_depth[0].squeeze().detach().cpu().numpy()
+
+        valid_mask = np.logical_and(
+            depth_np > self.opt.min_depth_eval,
+            depth_np < self.opt.max_depth_eval
+        )
+
+        if np.isnan(np.median(depth_np)) or np.isnan(np.median(pred_np)):
+            ratio = 1
+        else:
+            ratio = np.median(depth_np[valid_mask]) / np.median(pred_np[valid_mask])
+
+        pred_depth *= ratio
+
+        # === 5. Compute supervised SILog loss ===
         mask = gt_depth > self.opt.min_depth
+        l_dense = criterion_ueff(pred_depth, gt_depth, mask=mask.bool(), interpolate=False)
 
-        # Compute SILog loss exactly like fine-tuning
-        l_dense = criterion_ueff(pred_depth, gt_depth, mask=mask.to(torch.bool), interpolate=True)
-        return outputs, l_dense.item()
+        return pred_depth, l_dense.item()
 
     def remove_module_prefix(self, state_dict):
         return {k.replace("module.", ""): v for k, v in state_dict.items()}
