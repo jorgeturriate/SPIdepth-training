@@ -202,9 +202,12 @@ def train(model, args, opt ,epochs=10, experiment_name="DeepLab", lr=0.0001, roo
         remaining_steps = num_total_steps - step
         # limit the iterator to the remaining steps. If curriculum_loader yields fewer
         # batches than remaining_steps, islice will just iterate the full loader.
-        limited_loader = islice(curriculum_loader, remaining_steps)
+        # how many batches we'll actually take now (won't exceed remaining steps)
+        take = min(remaining_steps, len(curriculum_loader))
 
-        for i, batch in tqdm(enumerate(limited_loader), desc=f"Step: {step + 1}/{num_total_steps}. Loop: Train", total=len(limited_loader)):
+        limited_loader = islice(curriculum_loader, take)
+
+        for i, batch in tqdm(enumerate(limited_loader), desc=f"Step: {step + 1}/{num_total_steps}. Loop: Train", total=take):
             optimizer.zero_grad()
 
             img = batch['image'].to(device)
