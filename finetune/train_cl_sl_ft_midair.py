@@ -16,6 +16,8 @@ import torch.optim as optim
 import torch.utils.data.distributed
 import wandb
 from tqdm import tqdm
+from itertools import islice
+import math
 
 import model_io
 import utils
@@ -154,7 +156,7 @@ def train(model, args, opt ,epochs=10, experiment_name="DeepLab", lr=0.0001, roo
         optimizer.load_state_dict(optimizer_state_dict)
     ################################################################################################
     # some globals
-    iters = len(train_loader)
+    iters = len(train_loader.dataset)
     step = 0
     num_total_steps = epochs * (iters//args.bs)
     best_loss = np.inf
@@ -196,7 +198,13 @@ def train(model, args, opt ,epochs=10, experiment_name="DeepLab", lr=0.0001, roo
             score_path= "/home/jturriatellallire/scores_mid_sl_transfer.npy"
         )
 
-        for i, batch in tqdm(enumerate(curriculum_loader), desc=f"Step: {step + 1}/{num_total_steps}. Loop: Train", total=len(curriculum_loader)):
+        # compute how many batches we may still do (remaining steps)
+        remaining_steps = num_total_steps - step
+        # limit the iterator to the remaining steps. If curriculum_loader yields fewer
+        # batches than remaining_steps, islice will just iterate the full loader.
+        limited_loader = islice(curriculum_loader, remaining_steps)
+
+        for i, batch in tqdm(enumerate(limited_loader), desc=f"Step: {step + 1}/{num_total_steps}. Loop: Train", total=len(limited_loader)):
             optimizer.zero_grad()
 
             img = batch['image'].to(device)
@@ -234,7 +242,14 @@ def train(model, args, opt ,epochs=10, experiment_name="DeepLab", lr=0.0001, roo
                 wandb.log({f"Train/{criterion_ueff.name}": l_dense.item()}, step=step)
 
             step += 1
-            scheduler.step()
+            # step the scheduler but only if it hasn't already reached total_steps
+            if isinstance(scheduler, torch.optim.lr_scheduler.OneCycleLR):
+                # safe: we only call scheduler.step() while step <= num_total_steps
+                # (we used islice so we won't go past num_total_steps)
+                scheduler.step()
+            else:
+                # for other schedulers you may also want to step each iteration
+                scheduler.step()
 
             ########################################################################################################
             if should_write and step % args.validate_every == 0:
@@ -282,26 +297,26 @@ def train(model, args, opt ,epochs=10, experiment_name="DeepLab", lr=0.0001, roo
                 model.train()
                 #################################################################################################
         
-        # === Save final model in SPIdepth-style structure ===
-        final_save_folder = os.path.join(log_path, "models", f"weights_{step:02d}")
-        os.makedirs(final_save_folder, exist_ok=True)
+    # === Save final model in SPIdepth-style structure ===
+    final_save_folder = os.path.join(log_path, "models", f"weights_{step:02d}")
+    os.makedirs(final_save_folder, exist_ok=True)
 
-        if hasattr(model, "module"):
-            model_to_save = model.module
-        else:
-            model_to_save = model
+    if hasattr(model, "module"):
+        model_to_save = model.module
+    else:
+        model_to_save = model
 
-        if hasattr(model_to_save, "encoder"):
-            encoder_state = model_to_save.encoder.state_dict()
-            encoder_state["height"] = args.input_height
-            encoder_state["width"] = args.input_width
-            torch.save(encoder_state, os.path.join(final_save_folder, "encoder.pth"))
+    if hasattr(model_to_save, "encoder"):
+        encoder_state = model_to_save.encoder.state_dict()
+        encoder_state["height"] = args.input_height
+        encoder_state["width"] = args.input_width
+        torch.save(encoder_state, os.path.join(final_save_folder, "encoder.pth"))
 
-        if hasattr(model_to_save, "depth_decoder"):
-            torch.save(model_to_save.depth_decoder.state_dict(), os.path.join(final_save_folder, "depth.pth"))
+    if hasattr(model_to_save, "depth_decoder"):
+        torch.save(model_to_save.depth_decoder.state_dict(), os.path.join(final_save_folder, "depth.pth"))
 
-        torch.save(optimizer.state_dict(), os.path.join(final_save_folder, "adam.pth"))
-        print(f"Final model saved in: {final_save_folder}")
+    torch.save(optimizer.state_dict(), os.path.join(final_save_folder, "adam.pth"))
+    print(f"Final model saved in: {final_save_folder}")
 
     
     return model
