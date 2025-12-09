@@ -1,7 +1,7 @@
 --name spidepth_sl_midair
---root /home/jturriatellallire/logsMidairSL/spidepth_midair_9
+--root /home/jturriatellallire/logsMidairSL/spidepth_midair_18
 --load_weights_folder /content/drive/MyDrive/SPIdepth_Training/Pretrained_models/kitti/
---epochs 9
+--epochs 18
 --bs 16
 --lr 1e-4
 --wd 0.01
