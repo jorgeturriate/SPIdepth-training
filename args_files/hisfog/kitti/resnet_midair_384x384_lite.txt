@@ -22,7 +22,7 @@
 --pose_net_path /home/jturriatellallire/logsMidair/full_transfer_mid_linear_a08_ep18_cl/res_midair/models/weights_7481/
 --diff_lr
 --load_weights_folder /home/jturriatellallire/logsMidairSL/spidepth_midair_9/logs/models/weights_09/
---load_pt_folder /home/jturriatellallire/logsMidairSL/spidepth_midair_9/logs/models/weights_09/
+--load_pt_folder /home/jturriatellallire/logsMidairSL/spidepth_midair_27/logs/models/weights_27/
 --eval_mono
 --post_process
 --num_workers 0
